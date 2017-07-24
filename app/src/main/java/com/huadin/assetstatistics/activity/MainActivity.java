@@ -1,16 +1,12 @@
 package com.huadin.assetstatistics.activity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -21,13 +17,14 @@ import com.huadin.assetstatistics.fragment.OutboundFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
 import com.huadin.assetstatistics.fragment.StorageFragment;
 import com.huadin.assetstatistics.utils.DialogUtils;
+import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
   @BindView(R.id.toolbar)
   public Toolbar mToolbar;
@@ -45,21 +42,18 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
-
-
-    initToolbar("库存资产",false);
+    RFIDUtils.getInstance().connect();//连接RFID
+    initView();
     initListener();
 
     //默认展示库存资产fragment
     ((RadioButton) mRadioGroup.getChildAt(0)).setChecked(true);
   }
 
-  private void initToolbar(String title,boolean b) {
-    mToolbar.setTitle(title);
-    mToolbar.setTitleTextColor(Color.WHITE);
-    setSupportActionBar(mToolbar);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(b);
+  private void initView(){
+    initToolbar(mToolbar,"",false);
   }
+
 
   private void initListener() {
     mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

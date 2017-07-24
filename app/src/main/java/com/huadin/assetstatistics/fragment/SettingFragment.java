@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.MainActivity;
 
 /**
@@ -20,11 +21,8 @@ public class SettingFragment extends BaseFragment {
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    TextView textView = new TextView(mActivity);
-    textView.setText("设置界面");
-    textView.setTextSize(20);
-    textView.setGravity(Gravity.CENTER);
-    return textView;
+    View view = inflater.inflate(R.layout.fragment_set,null);
+    return view;
   }
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {

@@ -12,6 +12,7 @@ import org.greenrobot.greendao.annotation.Generated;
 public class AssetDetail {
     @Id
     private Long id;
+    private String barcode;//条码号
     private String assetName;//设备名称
     private String enterTime;//入库时间
     private String people;//检验人
@@ -24,14 +25,16 @@ public class AssetDetail {
     private String checkDate;//检测日期
     private String nextCheckDate;//下次检测日期
     private String checkPeople;//检验员
+    private String exist;//存在   出入库标志
 
-    @Generated(hash = 1577015206)
-    public AssetDetail(Long id, String assetName, String enterTime, String people,
-            String deviceId, String usedCompany, String manufacturer,
-            String dateOfProduction, String inspectionNumber,
+    @Generated(hash = 84851972)
+    public AssetDetail(Long id, String barcode, String assetName, String enterTime,
+            String people, String deviceId, String usedCompany,
+            String manufacturer, String dateOfProduction, String inspectionNumber,
             String archivesNumber, String checkDate, String nextCheckDate,
-            String checkPeople) {
+            String checkPeople, String exist) {
         this.id = id;
+        this.barcode = barcode;
         this.assetName = assetName;
         this.enterTime = enterTime;
         this.people = people;
@@ -44,6 +47,7 @@ public class AssetDetail {
         this.checkDate = checkDate;
         this.nextCheckDate = nextCheckDate;
         this.checkPeople = checkPeople;
+        this.exist = exist;
     }
 
     @Generated(hash = 1757241519)
@@ -152,5 +156,21 @@ public class AssetDetail {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getBarcode() {
+        return this.barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public String getExist() {
+        return this.exist;
+    }
+
+    public void setExist(String exist) {
+        this.exist = exist;
     }
 }

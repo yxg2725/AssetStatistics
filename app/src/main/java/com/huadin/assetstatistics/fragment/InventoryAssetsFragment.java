@@ -77,7 +77,7 @@ public class InventoryAssetsFragment extends BaseFragment {
       AssetsStyle asset = new AssetsStyle();
       asset.setAsssetStyle(Contants.assetsType[i]);
 
-      List<AssetDetail> list = DbUtils.query(AssetDetail.class, Contants.assetsType[i]);
+      List<AssetDetail> list = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
       asset.setCount(list.size());
 
       asset.setUnit("个");

@@ -42,7 +42,9 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
+
     RFIDUtils.getInstance().connect();//连接RFID
+
     initView();
     initListener();
 

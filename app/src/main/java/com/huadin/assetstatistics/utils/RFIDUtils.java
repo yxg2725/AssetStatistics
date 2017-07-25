@@ -1,18 +1,30 @@
 package com.huadin.assetstatistics.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.huadin.assetstatistics.R;
+import com.huadin.assetstatistics.activity.AssetDetailActivity;
 import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.ReaderParams;
 import com.pow.api.cls.RfidPower;
 import com.uhf.api.cls.Reader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static android.content.ContentValues.TAG;
+import static android.os.Build.VERSION_CODES.M;
 
 /**
  * Created by 华电 on 2017/7/24.
@@ -32,6 +44,7 @@ public class RFIDUtils {
 
   private volatile  static RFIDUtils instance;//多线程访问
   private  Reader mReader;
+  private Context context;
 
   //单例
   public static RFIDUtils getInstance(){
@@ -67,8 +80,10 @@ public class RFIDUtils {
     boolean blen = mRpower.PowerUp();
     boolean connect = isConnect();
     if(connect){
+      MyApplication.connectSuccess = true;
       Toast.makeText(MyApplication.getContext(), "连接成功", Toast.LENGTH_SHORT).show();
     }else{
+      MyApplication.connectSuccess = false;
       Toast.makeText(MyApplication.getContext(), "连接失败", Toast.LENGTH_SHORT).show();
     }
   }
@@ -93,9 +108,10 @@ public class RFIDUtils {
   }
 
   //读取数据
-  public void readData(){
+  public void readData(Context context){
+    this.context = context;
 
-    if(!isConnect()){
+    if(!MyApplication.connectSuccess){
       connect();
     }
 
@@ -136,8 +152,6 @@ public class RFIDUtils {
 
               if (er == Reader.READER_ERR.MT_OK_ERR) {
                 tag[i] = Reader.bytes_Hexstr(tfs.EpcId);
-
-                Toast.makeText(MyApplication.getContext(), tag[i], Toast.LENGTH_SHORT).show();
               }
             }
           }
@@ -153,12 +167,68 @@ public class RFIDUtils {
         }
       }
 
-      /*if (tagcnt[0] > 0) {
-        etResult.setText("");
-        showlist();
-      }*/
+      if(tag.length > 0){
+        Toast.makeText(MyApplication.getContext(), tag[0], Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(context, AssetDetailActivity.class);
+        context.startActivity(intent);
+      }
 
      // mReader.postDelayed(this, rParams.sleep);
     }
   };
+
+
+  public void readOneByOne(Context context,String tag){
+    this.context = context;
+    if(!MyApplication.connectSuccess){
+      connect();
+    }
+
+    try {
+      rParams.opant=1;
+      byte[] rdata=new byte[12];
+
+      byte[] rpaswd=new byte[4];
+
+
+      Reader.READER_ERR er= Reader.READER_ERR.MT_OK_ERR;
+      int trycount=3;
+      do{
+        er=mReader.GetTagData(rParams.opant, (char)1,2,6,rdata,rpaswd,(short)rParams.optime);
+
+        trycount--;
+        if(trycount<1)
+          break;
+      }while(er!= Reader.READER_ERR.MT_OK_ERR);
+
+      if(er== Reader.READER_ERR.MT_OK_ERR)
+      {
+        String val="";
+        char[] out=null;
+
+         out=new char[rdata.length*2];
+          mReader.Hex2Str(rdata, rdata.length, out);
+          val=String.valueOf(out);
+
+        soundPool.play(1, 1, 1, 0, 0, 1);
+        Toast.makeText(MyApplication.getContext(), "成功:"+val,
+                Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(context, AssetDetailActivity.class);
+        intent.putExtra("tag",tag);
+        intent.putExtra("result",val);
+        context.startActivity(intent);
+      }
+      else{
+        Toast.makeText(MyApplication.getContext(), "失败:"+er.toString(),
+                Toast.LENGTH_SHORT).show();
+      }
+    } catch (Exception e) {
+      Toast.makeText(MyApplication.getContext(),e.toString(),Toast.LENGTH_SHORT).show();
+    }
+  }
+
+
+
 }

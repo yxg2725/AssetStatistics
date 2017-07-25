@@ -8,11 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.MainActivity;
 import com.huadin.assetstatistics.adapter.OutAssetsAdapter;
+import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
+import com.huadin.assetstatistics.event.Event;
+import com.huadin.assetstatistics.utils.DbUtils;
+import com.huadin.assetstatistics.utils.RFIDUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +44,14 @@ public class OutboundFragment extends BaseFragment {
   RecyclerView mRv;
   Unbinder unbinder;
   private ArrayList<AssetDetail> assetDetails = new ArrayList<>();
+  private OutAssetsAdapter mAdapter;
 
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_outbound, null);
     unbinder = ButterKnife.bind(this, view);
+    EventBus.getDefault().register(this);
     return view;
   }
 
@@ -50,31 +61,25 @@ public class OutboundFragment extends BaseFragment {
     ((MainActivity) mActivity).mToolbar.setTitle("出库统计");
 
     initView();
+    initData();
   }
+
+
 
   private void initView() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
     mRv.setLayoutManager(linearLayoutManager);
-    for (int i = 0; i < 20; i++) {
-      AssetDetail assetDetail = new AssetDetail();
-
-      assetDetail.setAssetName("脚扣" + i);
-      assetDetail.setDeviceId("设备型号" + i);
-      assetDetail.setUsedCompany("使用单位"+ i);
-      assetDetail.setManufacturer("生成厂家"+ i);
-      assetDetail.setDateOfProduction("生成日期"+ i);
-      assetDetail.setInspectionNumber("检测编号"+ i);
-      assetDetail.setArchivesNumber("档案编号"+ i);
-      assetDetail.setCheckDate("校验日期"+ i);
-      assetDetail.setNextCheckDate("下次校验日期"+ i);
-      assetDetail.setCheckPeople("校验员"+ i);
-
-      assetDetails.add(assetDetail);
-    }
-    OutAssetsAdapter mAdapter = new OutAssetsAdapter(assetDetails);
+    mAdapter = new OutAssetsAdapter(assetDetails);
     mRv.setAdapter(mAdapter);
   }
 
+  private void initData() {
+    //查询出库的资产
+    List<AssetDetail> list = DbUtils.queryByExist(AssetDetail.class, "no");
+    assetDetails.clear();
+    assetDetails.addAll(list);
+    mAdapter.notifyDataSetChanged();
+  }
   @Override
   public void onDestroyView() {
     super.onDestroyView();
@@ -83,6 +88,27 @@ public class OutboundFragment extends BaseFragment {
 
   @OnClick(R.id.btn_scan)
   public void onViewClicked() {
-    // TODO: 2017/7/22 开始扫描
+
+    if(!MyApplication.connectSuccess){
+      RFIDUtils.getInstance().connect();
+    }
+    MainActivity activity = (MainActivity) mActivity;
+    //RFIDUtils.getInstance().readData(activity);
+    RFIDUtils.getInstance().readOneByOne(activity,"OutboundFragment");
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+  public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
+    if(event.getTag().equals("OutboundFragment")){
+      Toast.makeText(MyApplication.getContext(),"收到",Toast.LENGTH_SHORT).show();
+      AssetDetail assetDetail = event.getAssetDetail();
+      assetDetails.add(assetDetail);
+      mAdapter.notifyDataSetChanged();
+    }
+  }
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    EventBus.getDefault().unregister(this);
   }
 }

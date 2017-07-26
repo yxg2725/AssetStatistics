@@ -15,7 +15,8 @@
         <TextView
             android:textColor="@android:color/holo_red_dark"
             android:gravity="center"
-            android:text="资产类型"
+            android:text="工具"
+            android:textSize="@dimen/text_size"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
@@ -27,17 +28,35 @@
             android:textColor="@android:color/holo_red_dark"
             android:gravity="center"
             android:text="数量"
+            android:textSize="@dimen/text_size"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
+
         <View
             android:background="@android:color/background_dark"
             android:layout_width="1dp"
             android:layout_height="match_parent"/>
         <TextView
             android:textColor="@android:color/holo_red_dark"
+            android:id="@+id/tv_exist_num"
             android:gravity="center"
-            android:text="单位"
+            android:text="库存"
+            android:textSize="@dimen/text_size"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:background="@android:color/background_dark"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:textColor="@android:color/holo_red_dark"
+            android:id="@+id/tv_out_num"
+            android:gravity="center"
+            android:text="出库"
+            android:textSize="@dimen/text_size"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>

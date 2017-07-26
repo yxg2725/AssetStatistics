@@ -12,13 +12,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.huadin.assetstatistics.R;
+import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.fragment.InventoryAssetsFragment;
 import com.huadin.assetstatistics.fragment.OutboundFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
 import com.huadin.assetstatistics.fragment.StorageFragment;
+import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.DialogUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,7 +59,6 @@ public class MainActivity extends BaseActivity {
   private void initView(){
     initToolbar(mToolbar,"",false);
   }
-
 
   private void initListener() {
     mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

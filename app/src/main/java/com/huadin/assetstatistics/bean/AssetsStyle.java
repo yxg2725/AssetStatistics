@@ -8,56 +8,12 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by 华电 on 2017/7/19.
  */
 
-@Entity
 public class AssetsStyle {
-  @Id
-  private Long id;
+
   private String asssetStyle;//设备类型名称
-  private int count;
-  private String unit;
-
-  @Generated(hash = 1442711058)
-  public AssetsStyle(Long id, String asssetStyle, int count, String unit) {
-    this.id = id;
-    this.asssetStyle = asssetStyle;
-    this.count = count;
-    this.unit = unit;
-  }
-
-  @Generated(hash = 882752957)
-  public AssetsStyle() {
-  }
-
-  /*public AssetsStyle(){}
-  protected AssetsStyle(Parcel in) {
-    asssetStyle = in.readString();
-    count = in.readInt();
-    unit = in.readString();
-  }
-
-  @Override
-  public void writeToParcel(Parcel dest, int flags) {
-    dest.writeString(asssetStyle);
-    dest.writeInt(count);
-    dest.writeString(unit);
-  }
-
-  @Override
-  public int describeContents() {
-    return 0;
-  }
-
-  public static final Creator<AssetsStyle> CREATOR = new Creator<AssetsStyle>() {
-    @Override
-    public AssetsStyle createFromParcel(Parcel in) {
-      return new AssetsStyle(in);
-    }
-
-    @Override
-    public AssetsStyle[] newArray(int size) {
-      return new AssetsStyle[size];
-    }
-  };*/
+  private int count;//总个数
+  private int existNum;//库存个数
+  private int outNum;//出库个数
 
   public String getAsssetStyle() {
     return asssetStyle;
@@ -75,19 +31,19 @@ public class AssetsStyle {
     this.count = count;
   }
 
-  public String getUnit() {
-    return unit;
+  public int getExistNum() {
+    return existNum;
   }
 
-  public void setUnit(String unit) {
-    this.unit = unit;
+  public void setExistNum(int existNum) {
+    this.existNum = existNum;
   }
 
-  public Long getId() {
-    return this.id;
+  public int getOutNum() {
+    return outNum;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setOutNum(int outNum) {
+    this.outNum = outNum;
   }
 }

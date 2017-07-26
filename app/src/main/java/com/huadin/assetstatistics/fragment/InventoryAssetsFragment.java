@@ -1,5 +1,6 @@
 package com.huadin.assetstatistics.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,14 +17,9 @@ import com.huadin.assetstatistics.activity.MainActivity;
 import com.huadin.assetstatistics.adapter.MyAdapter;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.bean.AssetsStyle;
-import com.huadin.assetstatistics.bean.dao.DaoManager;
-import com.huadin.assetstatistics.gen.AssetsStyleDao;
-import com.huadin.assetstatistics.gen.DaoMaster;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.IntentUtils;
-
-import org.greenrobot.greendao.database.Database;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +27,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by 华电 on 2017/7/19.
@@ -60,50 +54,71 @@ public class InventoryAssetsFragment extends BaseFragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-
     initView();
     initListener();
   }
 
-
   private void initView() {
     ((MainActivity) mActivity).mToolbar.setTitle("库存资产");
     mRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
-
     assets = new ArrayList<>();
-    DbUtils.deleteAll(AssetsStyle.class);
+    mAdapter = new MyAdapter(assets);
+    mRecyclerview.setAdapter(mAdapter);
+  }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    initData();
+  }
+
+  private void initData() {
+
+    assets.clear();
     for (int i = 0; i < Contants.assetsType.length; i++) {
       AssetsStyle asset = new AssetsStyle();
       asset.setAsssetStyle(Contants.assetsType[i]);
 
+      //总个数查询
       List<AssetDetail> list = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
       asset.setCount(list.size());
 
-      asset.setUnit("个");
+      //库存个数查询
+      List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "yes");
+      asset.setExistNum(existList.size());
 
-      //插入数据库
-      DbUtils.insert(asset);
+      //出库个数查询
+      List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "no");
+      asset.setOutNum(outList.size());
 
       assets.add(asset);
     }
 
-    Log.i("InventoryAssetsFragment", "size: " + DbUtils.queryAll(AssetsStyle.class).size());
+   /* Log.i("InventoryAssetsFragment", "size: " + DbUtils.queryAll(AssetsStyle.class).size());
     mAdapter = new MyAdapter(assets);
-    mRecyclerview.setAdapter(mAdapter);
+    mRecyclerview.setAdapter(mAdapter);*/
+
+    mAdapter.notifyDataSetChanged();
   }
+
+
 
   private void initListener() {
     mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
       @Override
       public void onItemClick(int position) {
         AssetsStyle asset = assets.get(position);
-        Bundle bundle = new Bundle();
+       /* Bundle bundle = new Bundle();
        // bundle.putParcelable("asset",asset);
-        IntentUtils.startActivity(mActivity, AssetsItemActivity.class,bundle,false);
+        IntentUtils.startActivity(mActivity, AssetsItemActivity.class,bundle,false);*/
+
+        Intent intent = new Intent(mActivity,AssetsItemActivity.class);
+        intent.putExtra("assetName",asset.getAsssetStyle());
+        mActivity.startActivity(intent);
       }
     });
   }
+
   @Override
   public void onDestroyView() {
     super.onDestroyView();

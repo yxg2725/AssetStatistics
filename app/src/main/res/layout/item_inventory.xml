@@ -9,12 +9,14 @@
     <LinearLayout
         android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="wrap_content">
 
         <TextView
+            android:padding="5dp"
             android:id="@+id/table_name"
             android:gravity="center"
             android:text="名称"
+            android:textSize="@dimen/text_size2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
@@ -23,20 +25,39 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"/>
         <TextView
+            android:padding="5dp"
             android:id="@+id/table_num"
             android:gravity="center"
             android:text="数量"
+            android:textSize="@dimen/text_size2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
+
         <View
             android:background="@android:color/background_dark"
             android:layout_width="1dp"
             android:layout_height="match_parent"/>
         <TextView
-            android:id="@+id/table_unit"
+            android:padding="5dp"
+            android:id="@+id/tv_exist_num"
             android:gravity="center"
-            android:text="单位"
+            android:text="库存"
+            android:textSize="@dimen/text_size2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:background="@android:color/background_dark"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/tv_out_num"
+            android:gravity="center"
+            android:text="出库"
+            android:textSize="@dimen/text_size2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>

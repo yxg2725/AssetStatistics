@@ -27,14 +27,18 @@ public class MyAdapter extends BaseAdapter<AssetsStyle>  {
   @Override
   public void setItemView(View itemView, int postion) {
 
-    TextView tableName = (TextView) itemView.findViewById(R.id.table_name);
-    TextView tableNum = (TextView) itemView.findViewById(R.id.table_num);
-    TextView tableUnit = (TextView) itemView.findViewById(R.id.table_unit);
+    TextView tableName = (TextView) itemView.findViewById(R.id.table_name);//名称
+    TextView tableNum = (TextView) itemView.findViewById(R.id.table_num);//数量
+    TextView existNum = (TextView) itemView.findViewById(R.id.tv_exist_num);//库存
+    TextView outNum = (TextView) itemView.findViewById(R.id.tv_out_num);//出库
 
     AssetsStyle asset = list.get(postion);
+
     tableName.setText(asset.getAsssetStyle());
     tableNum.setText(asset.getCount() + "");
-    tableUnit.setText(asset.getUnit());
+    existNum.setText(asset.getExistNum()+"");
+    outNum.setText(asset.getOutNum()+"");
+
   }
 
 

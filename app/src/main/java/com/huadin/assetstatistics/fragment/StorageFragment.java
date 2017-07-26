@@ -109,9 +109,10 @@ public class StorageFragment extends BaseFragment {
   public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
     if(event.getTag().equals("StorageFragment")){
       Toast.makeText(MyApplication.getContext(),"收到",Toast.LENGTH_SHORT).show();
-      AssetDetail assetDetail = event.getAssetDetail();
+      /*AssetDetail assetDetail = event.getAssetDetail();
       assetDetails.add(assetDetail);
-      mAdapter.notifyDataSetChanged();
+      mAdapter.notifyDataSetChanged();*/
+      initData();
     }
   }
   @Override

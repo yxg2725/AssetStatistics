@@ -62,7 +62,7 @@ public class InventoryAssetsFragment extends BaseFragment {
     ((MainActivity) mActivity).mToolbar.setTitle("库存资产");
     mRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
     assets = new ArrayList<>();
-    mAdapter = new MyAdapter(assets);
+    mAdapter = new MyAdapter(mActivity,assets);
     mRecyclerview.setAdapter(mAdapter);
   }
 

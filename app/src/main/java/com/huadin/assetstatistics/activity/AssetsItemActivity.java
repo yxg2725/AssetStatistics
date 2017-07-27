@@ -2,9 +2,7 @@ package com.huadin.assetstatistics.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,8 +10,6 @@ import android.support.v7.widget.Toolbar;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.bigkoo.svprogresshud.listener.OnDismissListener;
 import com.huadin.assetstatistics.R;
-import com.huadin.assetstatistics.adapter.AssetDetailAdapter;
-import com.huadin.assetstatistics.adapter.MyAdapter;
 import com.huadin.assetstatistics.adapter.OutAssetsAdapter;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.utils.DbUtils;
@@ -90,7 +86,7 @@ public class AssetsItemActivity extends BaseActivity {
 
             assetDetails.add(assetDetail);
         }*/
-        mAdapter = new OutAssetsAdapter(assetDetails);
+        mAdapter = new OutAssetsAdapter(this,assetDetails);
         mRecyclerview.addItemDecoration(new MyDecoration(this, MyDecoration.VERTICAL_LIST));
         mRecyclerview.setAdapter(mAdapter);
     }
@@ -106,7 +102,7 @@ public class AssetsItemActivity extends BaseActivity {
         assetDetails.clear();
         assetDetails.addAll(list);
         if(mAdapter == null){
-            mAdapter = new OutAssetsAdapter(assetDetails);
+            mAdapter = new OutAssetsAdapter(this,assetDetails);
             mRecyclerview.addItemDecoration(new MyDecoration(this, MyDecoration.VERTICAL_LIST));
             mRecyclerview.setAdapter(mAdapter);
         }else{

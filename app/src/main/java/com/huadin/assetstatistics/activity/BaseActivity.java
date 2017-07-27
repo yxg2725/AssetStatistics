@@ -6,7 +6,9 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.utils.DialogUtils;
@@ -17,6 +19,7 @@ import com.huadin.assetstatistics.utils.ToastUtils;
  */
 
 public class BaseActivity extends AppCompatActivity {
+    long exittime = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,4 +42,6 @@ public class BaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
+
 }

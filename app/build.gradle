@@ -44,7 +44,6 @@ dependencies {
     /*greenDao*/
     /*角标*/
     compile files('libs/DeviceAPIver20150906.jar')
-
     /*MD风格的Dialog*/
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.0.0'
@@ -57,9 +56,12 @@ dependencies {
     compile 'com.afollestad.material-dialogs:commons:0.9.4.5'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
-
     /*eventBus*/
     compile 'org.greenrobot:eventbus:3.0.0'
     /*提示库*/
     compile 'com.bigkoo:svprogresshud:1.0.4'
+    compile files('libs/jxl.jar')
+    /*权限*/
+    compile 'com.yanzhenjie:permission:1.0.8'
+    compile files('libs/pinyin4j-2.5.0.jar')
 }

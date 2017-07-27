@@ -1,31 +1,49 @@
 package com.huadin.assetstatistics.activity;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
+import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.bean.AssetDetail;
+import com.huadin.assetstatistics.bean.AssetsStyle;
 import com.huadin.assetstatistics.fragment.InventoryAssetsFragment;
 import com.huadin.assetstatistics.fragment.OutboundFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
 import com.huadin.assetstatistics.fragment.StorageFragment;
+import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.DialogUtils;
+import com.huadin.assetstatistics.utils.ExcelUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
+import com.yanzhenjie.permission.AndPermission;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.R.id.list;
+import static com.huadin.assetstatistics.utils.Contants.assetsType;
+import static com.huadin.assetstatistics.utils.ExcelUtils.writeObjListToExcel;
 
 
 public class MainActivity extends BaseActivity {
@@ -40,6 +58,7 @@ public class MainActivity extends BaseActivity {
   private OutboundFragment mOutboundFragment;
   private StorageFragment mStorageFragment;
   private SettingFragment mSettingFragment;
+  private SVProgressHUD dialog;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +67,12 @@ public class MainActivity extends BaseActivity {
     ButterKnife.bind(this);
 
     RFIDUtils.getInstance().connect();//连接RFID
+
+    //权限申请
+    AndPermission.with(this)
+            .requestCode(100)
+            .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .start();
 
     initView();
     initListener();
@@ -58,6 +83,7 @@ public class MainActivity extends BaseActivity {
 
   private void initView(){
     initToolbar(mToolbar,"",false);
+    dialog = new SVProgressHUD(this);
   }
 
   private void initListener() {
@@ -115,16 +141,126 @@ public class MainActivity extends BaseActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()){
-      case R.id.menu_add_category:
-        DialogUtils.show(this);
-        break;
       case R.id.menu_import:
         ToastUtils.show(mToolbar,"数据导入");
         break;
       case R.id.menu_export:
-        ToastUtils.show(mToolbar,"数据导出");
+        dialog.showWithStatus("导出中...");
+        //导出的文件名
+        String dirFileName = getDirFileName();
+
+        //表格的sheet名
+        List<String> sheetNames = Arrays.asList(Contants.SHEETNAMES);
+
+        //表头
+        String[] tablehead = Contants.TABLEHEAD;
+        List<String> tableHeads = Arrays.asList(tablehead);
+
+        //表格的标题
+        List<String[]> titles = new ArrayList<>();
+        titles.add(Contants.TABLETITLE_DETAILE);
+        titles.add(Contants.TABLETITLE_TOTAL);
+
+        ExcelUtils.initExcel(dirFileName, sheetNames,titles,tableHeads);
+
+        //获取数据
+        ArrayList<ArrayList<ArrayList<String>>> contentList = new ArrayList<>();
+
+        //明细sheet的数据
+        ArrayList<ArrayList<String>> detailList = new ArrayList<>();
+        List<AssetDetail> list = DbUtils.queryAll(AssetDetail.class);//明细的数
+        Collections.sort(list);
+
+        for(AssetDetail asset : list){
+          ArrayList<String> assetList = new ArrayList<>();
+          assetList.add(asset.getAssetName());
+          assetList.add(asset.getDeviceId());
+          assetList.add(asset.getUsedCompany());
+          assetList.add(asset.getManufacturer());
+          assetList.add(asset.getDateOfProduction());
+          assetList.add(asset.getInspectionNumber());
+          assetList.add(asset.getArchivesNumber());
+          assetList.add(asset.getCheckDate());
+          assetList.add(asset.getNextCheckDate());
+          assetList.add(asset.getCheckPeople());
+          assetList.add(asset.getExist());
+
+          detailList.add(assetList);
+        }
+
+        //总体sheet的数据
+        ArrayList<ArrayList<String>> totalList = new ArrayList<>();
+
+        for (int i = 0; i < Contants.assetsType.length; i++) {
+          ArrayList<String> List3 = new ArrayList<>();
+
+          List3.add(Contants.assetsType[i]);
+          //总个数查询
+          List<AssetDetail> list1 = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
+          List3.add(list1.size() +"");
+
+          //库存个数查询
+          List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "yes");
+          List3.add(existList.size() +"");
+
+          //出库个数查询
+          List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "no");
+          List3.add(outList.size() + "");
+
+          totalList.add(List3);
+        }
+
+        contentList.add(detailList);
+        contentList.add(totalList);
+
+        boolean issuccess = ExcelUtils.writeObjListToExcel(contentList, dirFileName, this);
+
+        if(issuccess){
+          dialog.showSuccessWithStatus("导出成功");
+        }else{
+          dialog.showErrorWithStatus("导出失败");
+        }
         break;
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private String getDirFileName() {
+    //获取文件名
+    File file = new File(Environment.getExternalStorageDirectory(), "安全工器具");
+    if(!file.exists()){
+      file.mkdir();
+    }
+
+    return file.getAbsolutePath() + "/" + Contants.TABLENAME;
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if(RFIDUtils.getInstance().mHandler != null){
+      RFIDUtils.getInstance().mHandler.removeCallbacksAndMessages(null);
+    }
+
+    if (RFIDUtils.getInstance().mReader != null){
+      RFIDUtils.getInstance().mReader.CloseReader();
+      RFIDUtils.getInstance().mRpower.PowerDown();
+    }
+
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+      if ((System.currentTimeMillis() - exittime) > 2000) {
+        Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+        exittime = System.currentTimeMillis();
+      }else{
+        finish();
+      }
+
+      return true;
+    }
+    return super.onKeyDown(keyCode, event);
   }
 }

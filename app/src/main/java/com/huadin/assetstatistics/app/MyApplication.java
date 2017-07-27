@@ -19,8 +19,7 @@ public class MyApplication extends Application {
     super.onCreate();
 
     context = this;
-  //  Thread.setDefaultUncaughtExceptionHandler(MyExceptionHandler.getInstance(getApplicationContext()));
-
+    Thread.setDefaultUncaughtExceptionHandler(MyExceptionHandler.getInstance(getApplicationContext()));
   }
 
   public static Context getContext(){

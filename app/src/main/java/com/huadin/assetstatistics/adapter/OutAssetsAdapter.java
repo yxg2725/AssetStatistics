@@ -1,13 +1,16 @@
 package com.huadin.assetstatistics.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.flyco.labelview.LabelView;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.bean.AssetDetail;
+import com.huadin.assetstatistics.utils.DatePickDialogUtil;
 
 import java.util.ArrayList;
 
@@ -18,8 +21,8 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
  */
 
 public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
-  public OutAssetsAdapter(ArrayList list) {
-    super(list);
+  public OutAssetsAdapter(Context context, ArrayList list) {
+    super(context,list);
   }
 
   @Override
@@ -42,6 +45,7 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     TextView checkPeople = (TextView) itemView.findViewById(R.id.check_people);
     com.flyco.labelview.LabelView labelView = (LabelView) itemView.findViewById(R.id.labelView);
 
+
     deveiceName.setText(assetDetail.getAssetName());//设备名称
     deveiceId.setText(assetDetail.getDeviceId());//设备型号
     usedCompany.setText(assetDetail.getUsedCompany());//使用单位
@@ -57,4 +61,8 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     labelView.setBgColor (Color.parseColor("#3F9FE0"));
     labelView.setFillTriangle(true);
   }
+
+
+
+
 }

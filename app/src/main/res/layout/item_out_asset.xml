@@ -21,6 +21,7 @@
             android:layout_height="wrap_content">
         <!--设备名称：-->
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:background="@color/colorAccent"
             android:orientation="horizontal"
@@ -40,6 +41,7 @@
         </LinearLayout>
         <!--规格型号-->
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -58,6 +60,7 @@
         </LinearLayout>
         <!--使用单位-->
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -77,6 +80,7 @@
         <!--生产厂家-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -96,6 +100,7 @@
         <!--出厂日期-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -109,7 +114,8 @@
             <TextView
                 android:id="@+id/date_of_production"
                 android:text="YDQ HD-001"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
@@ -121,6 +127,7 @@
         <!--检验编号-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -141,6 +148,7 @@
         <!-- 档案编号-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -160,6 +168,7 @@
         <!--检验日期-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -173,12 +182,15 @@
             <TextView
                 android:id="@+id/check_date"
                 android:text="YDQ HD-001"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"/>
+
         </LinearLayout>
         <!--生产厂家-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -192,12 +204,15 @@
             <TextView
                 android:id="@+id/next_check_date"
                 android:text="YDQ HD-001"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"/>
+
         </LinearLayout>
         <!--出厂日期-->
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"

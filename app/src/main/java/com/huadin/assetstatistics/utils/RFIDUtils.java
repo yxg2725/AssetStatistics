@@ -37,13 +37,13 @@ public class RFIDUtils {
   private static int antportc = 1;//天线口      1表示一天线
   private final SoundPool soundPool;
   private final ReaderParams rParams;
-  private  RfidPower mRpower;
+  public   RfidPower mRpower;
 
-  private Handler mHandler = new Handler();
+  public Handler mHandler = new Handler();
 
 
   private volatile  static RFIDUtils instance;//多线程访问
-  private  Reader mReader;
+  public  Reader mReader;
   private Context context;
 
   //单例
@@ -72,12 +72,12 @@ public class RFIDUtils {
   public  void connect() {
 
     RfidPower.PDATYPE PT = RfidPower.PDATYPE.valueOf(6);
-    if(mRpower == null){
-      mRpower = new RfidPower(PT);
-    }
+    mRpower = new RfidPower(PT);
 
-    //String s = mRpower.GetDevPath();
+    String s = mRpower.GetDevPath();
+
     boolean blen = mRpower.PowerUp();
+    Toast.makeText(MyApplication.getContext(), "上电："+blen, Toast.LENGTH_SHORT).show();
     boolean connect = isConnect();
     if(connect){
       MyApplication.connectSuccess = true;

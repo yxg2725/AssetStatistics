@@ -1,5 +1,6 @@
 package com.huadin.assetstatistics.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,8 @@ import java.util.ArrayList;
 
 public class AssetDetailAdapter extends BaseAdapter<AssetDetail> {
 
-    public AssetDetailAdapter(ArrayList list) {
-        super(list);
+    public AssetDetailAdapter(Context context, ArrayList list) {
+        super(context,list);
     }
 
     @Override

@@ -24,6 +24,7 @@
 
     <!--设备名称-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -35,8 +36,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/et_assets_name"
+        <Spinner
+            android:id="@+id/sp_assets_name"
+            android:entries="@array/deveice_name"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -44,6 +46,7 @@
 
     <!--规格型号-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -63,6 +66,7 @@
     </LinearLayout>
     <!--使用单位-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -75,6 +79,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
+            android:text="密云供电公司"
             android:id="@+id/et_company"
             android:padding="5dp"
             android:layout_width="match_parent"
@@ -82,6 +87,7 @@
     </LinearLayout>
     <!--生产厂家-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -101,6 +107,7 @@
     </LinearLayout>
     <!--出厂日期-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -115,11 +122,19 @@
         <EditText
             android:id="@+id/et_date_of_production"
             android:padding="5dp"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/ib_calendar_production_date"
+            android:src="@drawable/calendar_bg"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <!--检测编号-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -139,6 +154,7 @@
     </LinearLayout>
     <!--档案编号-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -158,6 +174,7 @@
     </LinearLayout>
     <!--校验日期-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -172,11 +189,19 @@
         <EditText
             android:id="@+id/et_check_date"
             android:padding="5dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/ib_calendar_check_date"
+            android:src="@drawable/calendar_bg"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <!--下次校验日期-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -191,11 +216,20 @@
         <EditText
             android:id="@+id/et_next_check_date"
             android:padding="5dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+
+        <ImageButton
+            android:id="@+id/ib_calendar_next_check_date"
+            android:src="@drawable/calendar_bg"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <!--校验员-->
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_margin="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"

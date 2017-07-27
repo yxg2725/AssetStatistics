@@ -1,5 +1,7 @@
 package com.huadin.assetstatistics.bean;
 
+import android.support.annotation.NonNull;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
@@ -9,7 +11,7 @@ import org.greenrobot.greendao.annotation.Generated;
  */
 
 @Entity
-public class AssetDetail {
+public class AssetDetail  implements Comparable<AssetDetail>{
     @Id
     private Long id;
     private String barcode;//条码号
@@ -172,5 +174,15 @@ public class AssetDetail {
 
     public void setExist(String exist) {
         this.exist = exist;
+    }
+
+    @Override
+    public int compareTo(@NonNull AssetDetail o) {
+        if (this.getAssetName().compareTo(o.getAssetName()) > 0)
+            return 1;
+        else if (this.getAssetName().compareTo(o.getAssetName()) == 0)
+            return 0;
+        else
+            return -1;
     }
 }

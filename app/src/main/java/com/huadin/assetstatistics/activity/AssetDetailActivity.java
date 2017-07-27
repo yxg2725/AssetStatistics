@@ -3,14 +3,21 @@ package com.huadin.assetstatistics.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.event.Event;
+import com.huadin.assetstatistics.utils.Contants;
+import com.huadin.assetstatistics.utils.DatePickDialogUtil;
 import com.huadin.assetstatistics.utils.DbUtils;
+import com.huadin.assetstatistics.utils.PinyinUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -23,8 +30,8 @@ public class AssetDetailActivity extends BaseActivity {
 
   @BindView(R.id.toolbar)
   Toolbar mToolbar;
-  @BindView(R.id.et_assets_name)
-  EditText etAssetsName;
+  @BindView(R.id.sp_assets_name)
+  Spinner spAssetsName;
   @BindView(R.id.et_assets_id)
   EditText etAssetsId;
   @BindView(R.id.et_company)
@@ -47,12 +54,19 @@ public class AssetDetailActivity extends BaseActivity {
   ImageView iv;
   @BindView(R.id.btn_save)
   Button btnSave;
+  @BindView(R.id.ib_calendar_production_date)
+  ImageButton ibCalendarProductionDate;
+  @BindView(R.id.ib_calendar_check_date)
+  ImageButton ibCalendarCheckDate;
+  @BindView(R.id.ib_calendar_next_check_date)
+  ImageButton ibCalendarNextCheckDate;
   private String barcode;
 
   private boolean isExist = false;
   private AssetDetail mAssetDetail;
   private AssetDetail inputAssetDetail;
   private String tag;
+  private int selectedPosition = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +82,42 @@ public class AssetDetailActivity extends BaseActivity {
     //查询数据库
     mAssetDetail = DbUtils.queryByCode(AssetDetail.class, barcode);
 
-    if (mAssetDetail != null){
+    if (mAssetDetail != null) {
       setresult(mAssetDetail);
       isExist = true;
+    }else{
+      String format = String.format("%05d" , Integer.valueOf(barcode));
+      String jyx = PinyinUtil.getFirstletter("绝缘靴");
+      etArchivesNum.setText(jyx + "-"+format);
     }
     //不存在则手动输入
 
     initView();
+    initListener();
   }
 
+  private void initListener() {
+    spAssetsName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+         selectedPosition = position;
+        spAssetsName.setSelection(position);
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {}
+    });
+  }
+
+
   private void setresult(AssetDetail assetDetail) {
-    etAssetsName.setText(assetDetail.getAssetName());
+    /*etAssetsName.setText(assetDetail.getAssetName());
+    int selectedItemPosition = spAssetsName.getSelectedItemPosition();
+    String s = Contants.assetsType[selectedItemPosition];
+    spAssetsName.setSelection();*/
+
+    int selectedPosition = getSelectedPosition(assetDetail.getAssetName());
+    spAssetsName.setSelection(selectedPosition);
     etAssetsId.setText(assetDetail.getDeviceId());
     etCompany.setText(assetDetail.getUsedCompany());
     etManufacturer.setText(assetDetail.getManufacturer());
@@ -95,20 +134,12 @@ public class AssetDetailActivity extends BaseActivity {
     initToolbar(mToolbar, "资产入库", true);
   }
 
-  @OnClick(R.id.btn_save)
-  public void onViewClicked() {
-    saveData();
-    //将数据传回去
-    Event.InventoryAssetsEvent inventoryAssetsEvent = new Event.InventoryAssetsEvent();
-    inventoryAssetsEvent.setAssetDetail(inputAssetDetail);
-    inventoryAssetsEvent.setTag(tag);
-    EventBus.getDefault().post(inventoryAssetsEvent);
-    finish();
-  }
 
   private void saveData() {
     inputAssetDetail = new AssetDetail();
-    String assetsName = etAssetsName.getText().toString();
+
+    String assetsName = Contants.assetsType[selectedPosition];
+
     String assetsId = etAssetsId.getText().toString();
     String company = etCompany.getText().toString();
     String manufacturer = etManufacturer.getText().toString();
@@ -130,14 +161,14 @@ public class AssetDetailActivity extends BaseActivity {
     inputAssetDetail.setNextCheckDate(nextCheckDate);
     inputAssetDetail.setUsedCompany(company);
     inputAssetDetail.setInspectionNumber(checkNum);
-    if(tag.equals("OutboundFragment")){
+    if (tag.equals("OutboundFragment")) {
       inputAssetDetail.setExist("no");
-    }else if(tag.equals("StorageFragment")){
+    } else if (tag.equals("StorageFragment")) {
       inputAssetDetail.setExist("yes");
     }
 
 
-    if (isExist){
+    if (isExist) {
       //删除这条信息
       DbUtils.delete(mAssetDetail);
     }
@@ -145,4 +176,37 @@ public class AssetDetailActivity extends BaseActivity {
   }
 
 
+  @OnClick({R.id.btn_save,R.id.ib_calendar_production_date, R.id.ib_calendar_check_date, R.id.ib_calendar_next_check_date})
+  public void onViewClicked(View view) {
+    switch (view.getId()) {
+      case R.id.btn_save:
+        saveData();
+        //将数据传回去
+        Event.InventoryAssetsEvent inventoryAssetsEvent = new Event.InventoryAssetsEvent();
+        inventoryAssetsEvent.setAssetDetail(inputAssetDetail);
+        inventoryAssetsEvent.setTag(tag);
+        EventBus.getDefault().post(inventoryAssetsEvent);
+        finish();
+        break;
+      case R.id.ib_calendar_production_date:
+        new DatePickDialogUtil(this,-1,false).datePicKDialog(etDateOfProduction);
+        break;
+      case R.id.ib_calendar_check_date:
+        new DatePickDialogUtil(this,-1,false).datePicKDialog(etCheckDate);
+        break;
+      case R.id.ib_calendar_next_check_date:
+        new DatePickDialogUtil(this,-1,false).datePicKDialog(etNextCheckDate);
+        break;
+    }
+  }
+
+  public int getSelectedPosition(String name){
+    for (int i = 0; i < Contants.assetsType.length; i++) {
+      if(Contants.assetsType[i].equals(name)){
+        return i;
+      }
+    }
+
+    return 0;
+  }
 }

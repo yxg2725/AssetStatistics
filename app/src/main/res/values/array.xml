@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="deveice_name">
+        <item>绝缘靴</item>
+        <item>绝缘手套 </item>
+        <item>安全带</item>
+        <item>绝缘拉杆</item>
+        <item>地线杆</item>
+        <item>验电器</item>
+        <item>脚扣</item>
+        <item>个人安保线</item>
+        <item>安全帽</item>
+        <item>绝缘梯</item>
+    </string-array>
+</resources>

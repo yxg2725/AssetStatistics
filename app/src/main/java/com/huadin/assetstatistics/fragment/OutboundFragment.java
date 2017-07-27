@@ -69,7 +69,7 @@ public class OutboundFragment extends BaseFragment {
   private void initView() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
     mRv.setLayoutManager(linearLayoutManager);
-    mAdapter = new OutAssetsAdapter(assetDetails);
+    mAdapter = new OutAssetsAdapter(mActivity,assetDetails);
     mRv.setAdapter(mAdapter);
   }
 

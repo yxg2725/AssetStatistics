@@ -1,5 +1,6 @@
 package com.huadin.assetstatistics.adapter;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,8 +14,8 @@ import java.util.ArrayList;
  */
 
 public class MyAdapter extends BaseAdapter<AssetsStyle>  {
-  public MyAdapter(ArrayList<AssetsStyle> list) {
-    super(list);
+  public MyAdapter(Context context, ArrayList<AssetsStyle> list) {
+    super(context,list);
   }
 
   @Override

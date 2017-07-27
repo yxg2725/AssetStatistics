@@ -73,7 +73,7 @@ public class StorageFragment extends BaseFragment {
   private void initView() {
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
     mRv.setLayoutManager(linearLayoutManager);
-    mAdapter = new OutAssetsAdapter(assetDetails);
+    mAdapter = new OutAssetsAdapter(mActivity,assetDetails);
     mRv.setAdapter(mAdapter);
   }
 
@@ -109,9 +109,7 @@ public class StorageFragment extends BaseFragment {
   public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
     if(event.getTag().equals("StorageFragment")){
       Toast.makeText(MyApplication.getContext(),"收到",Toast.LENGTH_SHORT).show();
-      /*AssetDetail assetDetail = event.getAssetDetail();
-      assetDetails.add(assetDetail);
-      mAdapter.notifyDataSetChanged();*/
+
       initData();
     }
   }

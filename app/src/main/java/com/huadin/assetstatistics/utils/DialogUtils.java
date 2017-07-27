@@ -18,6 +18,7 @@ import com.huadin.assetstatistics.R;
 
 public class DialogUtils {
 
+
   public static void show(final Activity context){
 
     AlertDialog.Builder customizeDialog = new AlertDialog.Builder(context);

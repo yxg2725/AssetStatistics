@@ -45,6 +45,12 @@ dependencies {
     /*角标*/
     compile files('libs/DeviceAPIver20150906.jar')
     /*MD风格的Dialog*/
+    /*eventBus*/
+    /*提示库*/
+    compile files('libs/jxl.jar')
+    /*权限*/
+    compile files('libs/pinyin4j-2.5.0.jar')
+    //图片框架
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support:recyclerview-v7:25.0.0'
@@ -54,14 +60,11 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.0.0'
     compile 'com.flyco.labelview:FlycoLabelView_Lib:1.0.2@aar'
     compile 'com.afollestad.material-dialogs:commons:0.9.4.5'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.bigkoo:svprogresshud:1.0.4'
+    compile 'com.yanzhenjie:permission:1.0.8'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
-    /*eventBus*/
-    compile 'org.greenrobot:eventbus:3.0.0'
-    /*提示库*/
-    compile 'com.bigkoo:svprogresshud:1.0.4'
-    compile files('libs/jxl.jar')
-    /*权限*/
-    compile 'com.yanzhenjie:permission:1.0.8'
-    compile files('libs/pinyin4j-2.5.0.jar')
 }

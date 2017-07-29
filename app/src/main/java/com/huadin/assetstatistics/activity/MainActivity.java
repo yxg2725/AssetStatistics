@@ -1,12 +1,23 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +52,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.R.attr.path;
 import static android.R.id.list;
 import static com.huadin.assetstatistics.utils.Contants.assetsType;
 import static com.huadin.assetstatistics.utils.ExcelUtils.writeObjListToExcel;
@@ -59,6 +71,7 @@ public class MainActivity extends BaseActivity {
   private StorageFragment mStorageFragment;
   private SettingFragment mSettingFragment;
   private SVProgressHUD dialog;
+  private String path;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +79,7 @@ public class MainActivity extends BaseActivity {
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
-    RFIDUtils.getInstance().connect();//连接RFID
+    RFIDUtils.getInstance(this).connectAsync();//连接RFID
 
     //权限申请
     AndPermission.with(this)
@@ -81,8 +94,8 @@ public class MainActivity extends BaseActivity {
     ((RadioButton) mRadioGroup.getChildAt(0)).setChecked(true);
   }
 
-  private void initView(){
-    initToolbar(mToolbar,"",false);
+  private void initView() {
+    initToolbar(mToolbar, "", false);
     dialog = new SVProgressHUD(this);
   }
 
@@ -90,31 +103,31 @@ public class MainActivity extends BaseActivity {
     mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        switch (checkedId){
+        switch (checkedId) {
           case R.id.rb_inventory:
             //切换资产库存fragment
-            if(mInventoryAssetsFragment == null){
+            if (mInventoryAssetsFragment == null) {
               mInventoryAssetsFragment = new InventoryAssetsFragment();
             }
             setFragmentShow(mInventoryAssetsFragment);
             break;
           case R.id.rb_outbound:
             //切换出库统计fragment
-            if(mOutboundFragment == null){
+            if (mOutboundFragment == null) {
               mOutboundFragment = new OutboundFragment();
             }
             setFragmentShow(mOutboundFragment);
             break;
           case R.id.rb_storage:
             //切换入库统计fragment
-            if(mStorageFragment == null){
+            if (mStorageFragment == null) {
               mStorageFragment = new StorageFragment();
             }
             setFragmentShow(mStorageFragment);
             break;
           case R.id.rb_setting:
             //切换设置fragment
-            if(mSettingFragment == null){
+            if (mSettingFragment == null) {
               mSettingFragment = new SettingFragment();
             }
             setFragmentShow(mSettingFragment);
@@ -128,21 +141,21 @@ public class MainActivity extends BaseActivity {
 
   private void setFragmentShow(Fragment fragment) {
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-    transaction.replace(R.id.fl_container,fragment).commit();
+    transaction.replace(R.id.fl_container, fragment).commit();
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.inventory_menu,menu);
+    getMenuInflater().inflate(R.menu.inventory_menu, menu);
     return true;
 
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()){
+    switch (item.getItemId()) {
       case R.id.menu_import:
-        ToastUtils.show(mToolbar,"数据导入");
+        ToastUtils.show(mToolbar, "数据导入");
         break;
       case R.id.menu_export:
         dialog.showWithStatus("导出中...");
@@ -161,7 +174,7 @@ public class MainActivity extends BaseActivity {
         titles.add(Contants.TABLETITLE_DETAILE);
         titles.add(Contants.TABLETITLE_TOTAL);
 
-        ExcelUtils.initExcel(dirFileName, sheetNames,titles,tableHeads);
+        ExcelUtils.initExcel(dirFileName, sheetNames, titles, tableHeads);
 
         //获取数据
         ArrayList<ArrayList<ArrayList<String>>> contentList = new ArrayList<>();
@@ -171,7 +184,7 @@ public class MainActivity extends BaseActivity {
         List<AssetDetail> list = DbUtils.queryAll(AssetDetail.class);//明细的数
         Collections.sort(list);
 
-        for(AssetDetail asset : list){
+        for (AssetDetail asset : list) {
           ArrayList<String> assetList = new ArrayList<>();
           assetList.add(asset.getAssetName());
           assetList.add(asset.getDeviceId());
@@ -196,15 +209,15 @@ public class MainActivity extends BaseActivity {
 
           List3.add(Contants.assetsType[i]);
           //总个数查询
-          List<AssetDetail> list1 = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
-          List3.add(list1.size() +"");
+          List<AssetDetail> list1 = DbUtils.queryByNameAndGood(AssetDetail.class, Contants.assetsType[i]);
+          List3.add(list1.size() + "");
 
           //库存个数查询
-          List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "yes");
-          List3.add(existList.size() +"");
+          List<AssetDetail> existList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "yes");
+          List3.add(existList.size() + "");
 
           //出库个数查询
-          List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "no");
+          List<AssetDetail> outList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "no");
           List3.add(outList.size() + "");
 
           totalList.add(List3);
@@ -215,9 +228,9 @@ public class MainActivity extends BaseActivity {
 
         boolean issuccess = ExcelUtils.writeObjListToExcel(contentList, dirFileName, this);
 
-        if(issuccess){
+        if (issuccess) {
           dialog.showSuccessWithStatus("导出成功");
-        }else{
+        } else {
           dialog.showErrorWithStatus("导出失败");
         }
         break;
@@ -228,7 +241,7 @@ public class MainActivity extends BaseActivity {
   private String getDirFileName() {
     //获取文件名
     File file = new File(Environment.getExternalStorageDirectory(), "安全工器具");
-    if(!file.exists()){
+    if (!file.exists()) {
       file.mkdir();
     }
 
@@ -238,13 +251,13 @@ public class MainActivity extends BaseActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if(RFIDUtils.getInstance().mHandler != null){
-      RFIDUtils.getInstance().mHandler.removeCallbacksAndMessages(null);
+    if (RFIDUtils.getInstance(this).mHandler != null) {
+      RFIDUtils.getInstance(this).mHandler.removeCallbacksAndMessages(null);
     }
 
-    if (RFIDUtils.getInstance().mReader != null){
-      RFIDUtils.getInstance().mReader.CloseReader();
-      RFIDUtils.getInstance().mRpower.PowerDown();
+    if (RFIDUtils.getInstance(this).mReader != null) {
+      RFIDUtils.getInstance(this).mReader.CloseReader();
+      RFIDUtils.getInstance(this).mRpower.PowerDown();
     }
 
   }
@@ -255,7 +268,7 @@ public class MainActivity extends BaseActivity {
       if ((System.currentTimeMillis() - exittime) > 2000) {
         Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
         exittime = System.currentTimeMillis();
-      }else{
+      } else {
         finish();
       }
 
@@ -263,4 +276,6 @@ public class MainActivity extends BaseActivity {
     }
     return super.onKeyDown(keyCode, event);
   }
+
+
 }

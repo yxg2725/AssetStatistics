@@ -93,7 +93,7 @@ public class AssetsItemActivity extends BaseActivity {
 
     private void initData() {
 //    查询数据库
-        List<AssetDetail> list = DbUtils.queryByName(AssetDetail.class, assetName);
+        List<AssetDetail> list = DbUtils.queryByNameAndGood(AssetDetail.class, assetName);
 
         if(list.size() == 0){
             dialog.showInfoWithStatus("没有任何资产");

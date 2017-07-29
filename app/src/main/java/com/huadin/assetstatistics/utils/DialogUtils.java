@@ -19,26 +19,29 @@ import com.huadin.assetstatistics.R;
 public class DialogUtils {
 
 
-  public static void show(final Activity context){
+  public static void show(final Activity context, String title, String message, final OnPositiveCall call){
 
-    AlertDialog.Builder customizeDialog = new AlertDialog.Builder(context);
-    final View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_category,null);
-    customizeDialog.setTitle("添加资产分类");
-    customizeDialog.setView(dialogView);
-    customizeDialog.setPositiveButton("确定",
+    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+
+    dialog.setTitle(title);
+    dialog.setIcon(android.R.drawable.ic_dialog_alert);
+    dialog.setMessage(message);
+    dialog.setPositiveButton("确定",
             new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialog, int which) {
-                // 获取EditView中的输入内容
+                if(call != null){
+                  call.goOn();
+                }
               }
             });
-    customizeDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+    dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
-        // 获取EditView中的输入内容
+        dialog.dismiss();
       }
     });
-    customizeDialog.show();
+    dialog.show();
   }
 
   public void dismiss(){
@@ -60,5 +63,9 @@ public class DialogUtils {
     MaterialDialog dialog = builder.build();
     dialog.show();
 
+  }
+
+  public interface OnPositiveCall{
+    void goOn();
   }
 }

@@ -78,8 +78,8 @@ public class StorageFragment extends BaseFragment {
   }
 
   private void initData() {
-    //查询数据库 已入库的资产
-    List<AssetDetail> list = DbUtils.queryByExist(AssetDetail.class, "yes");
+    //查询数据库 已入库的资产 并且是合格的
+    List<AssetDetail> list = DbUtils.queryByExistAndGood(AssetDetail.class, "yes");
     assetDetails.clear();
     assetDetails.addAll(list);
     mAdapter.notifyDataSetChanged();
@@ -92,24 +92,27 @@ public class StorageFragment extends BaseFragment {
 
   @OnClick(R.id.btn_scan)
   public void onViewClicked() {
-
+    final MainActivity activity = (MainActivity) mActivity;
     if(!MyApplication.connectSuccess){
-      RFIDUtils.getInstance().connect();
+          RFIDUtils.getInstance(activity).connectAsync();
     }
-    MainActivity activity = (MainActivity) mActivity;
+    if(!MyApplication.connectSuccess){
+      return;
+    }
+
     //RFIDUtils.getInstance().readData(activity);
-    RFIDUtils.getInstance().readOneByOne(activity,"StorageFragment");
+   // RFIDUtils.getInstance().readOneByOne(activity,"StorageFragment");
     /*Intent intent = new Intent(activity, AssetDetailActivity.class);
     intent.putExtra("result","000001");
     activity.startActivity(intent);*/
+
+    RFIDUtils.getInstance(activity).readAsync("StorageFragment");
   }
 
 
   @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
   public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
     if(event.getTag().equals("StorageFragment")){
-      Toast.makeText(MyApplication.getContext(),"收到",Toast.LENGTH_SHORT).show();
-
       initData();
     }
   }

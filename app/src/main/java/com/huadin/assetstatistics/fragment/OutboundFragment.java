@@ -74,8 +74,8 @@ public class OutboundFragment extends BaseFragment {
   }
 
   private void initData() {
-    //查询出库的资产
-    List<AssetDetail> list = DbUtils.queryByExist(AssetDetail.class, "no");
+    //查询出库的资产并且是合格的
+    List<AssetDetail> list = DbUtils.queryByExistAndGood(AssetDetail.class, "no");
     assetDetails.clear();
     assetDetails.addAll(list);
     mAdapter.notifyDataSetChanged();
@@ -88,19 +88,22 @@ public class OutboundFragment extends BaseFragment {
 
   @OnClick(R.id.btn_scan)
   public void onViewClicked() {
+    MainActivity activity = (MainActivity) mActivity;
 
     if(!MyApplication.connectSuccess){
-      RFIDUtils.getInstance().connect();
+      RFIDUtils.getInstance(activity).connectAsync();
     }
-    MainActivity activity = (MainActivity) mActivity;
+    if(!MyApplication.connectSuccess){
+      return;
+    }
     //RFIDUtils.getInstance().readData(activity);
-    RFIDUtils.getInstance().readOneByOne(activity,"OutboundFragment");
+   // RFIDUtils.getInstance().readOneByOne(activity,"OutboundFragment");
+    RFIDUtils.getInstance(activity).readAsync("OutboundFragment");
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
   public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
     if(event.getTag().equals("OutboundFragment")){
-      Toast.makeText(MyApplication.getContext(),"收到",Toast.LENGTH_SHORT).show();
       /*AssetDetail assetDetail = event.getAssetDetail();
       assetDetails.add(assetDetail);
       mAdapter.notifyDataSetChanged();*/

@@ -3,7 +3,13 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-
+    <Button
+        android:layout_margin="10dp"
+        android:id="@+id/btn_check"
+        android:text="扫描检验"
+        android:background="@drawable/btn_scan_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <LinearLayout
         android:id="@+id/ll_table_title"
         android:background="@android:color/darker_gray"
@@ -68,5 +74,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+
+
 </LinearLayout>

@@ -5,27 +5,34 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.AssetsItemActivity;
 import com.huadin.assetstatistics.activity.MainActivity;
+import com.huadin.assetstatistics.adapter.BaseAdapter;
 import com.huadin.assetstatistics.adapter.MyAdapter;
+import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.bean.AssetsStyle;
+import com.huadin.assetstatistics.event.Event;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
-import com.huadin.assetstatistics.utils.IntentUtils;
+import com.huadin.assetstatistics.utils.RFIDUtils;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -37,6 +44,8 @@ public class InventoryAssetsFragment extends BaseFragment {
 
   @BindView(R.id.recyclerview)
   RecyclerView mRecyclerview;
+  @BindView(R.id.btn_check)
+  Button btnCheck;
   @BindView(R.id.ll_table_title)
   LinearLayout mLlTableTitle;
   Unbinder unbinder;
@@ -62,14 +71,22 @@ public class InventoryAssetsFragment extends BaseFragment {
     ((MainActivity) mActivity).mToolbar.setTitle("库存资产");
     mRecyclerview.setLayoutManager(new LinearLayoutManager(mActivity));
     assets = new ArrayList<>();
-    mAdapter = new MyAdapter(mActivity,assets);
+    mAdapter = new MyAdapter(mActivity, assets);
     mRecyclerview.setAdapter(mAdapter);
   }
+
 
   @Override
   public void onResume() {
     super.onResume();
     initData();
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+  public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
+    if(event.getTag().equals("InventoryAssetsFragment")){
+      initData();
+    }
   }
 
   private void initData() {
@@ -80,15 +97,15 @@ public class InventoryAssetsFragment extends BaseFragment {
       asset.setAsssetStyle(Contants.assetsType[i]);
 
       //总个数查询
-      List<AssetDetail> list = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
+      List<AssetDetail> list = DbUtils.queryByNameAndGood(AssetDetail.class, Contants.assetsType[i]);
       asset.setCount(list.size());
 
       //库存个数查询
-      List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "yes");
+      List<AssetDetail> existList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "yes");
       asset.setExistNum(existList.size());
 
       //出库个数查询
-      List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class,Contants.assetsType[i], "no");
+      List<AssetDetail> outList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "no");
       asset.setOutNum(outList.size());
 
       assets.add(asset);
@@ -102,7 +119,6 @@ public class InventoryAssetsFragment extends BaseFragment {
   }
 
 
-
   private void initListener() {
     mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
       @Override
@@ -112,8 +128,8 @@ public class InventoryAssetsFragment extends BaseFragment {
        // bundle.putParcelable("asset",asset);
         IntentUtils.startActivity(mActivity, AssetsItemActivity.class,bundle,false);*/
 
-        Intent intent = new Intent(mActivity,AssetsItemActivity.class);
-        intent.putExtra("assetName",asset.getAsssetStyle());
+        Intent intent = new Intent(mActivity, AssetsItemActivity.class);
+        intent.putExtra("assetName", asset.getAsssetStyle());
         mActivity.startActivity(intent);
       }
     });
@@ -123,5 +139,18 @@ public class InventoryAssetsFragment extends BaseFragment {
   public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
+  }
+
+  @OnClick(R.id.btn_check)
+  public void onViewClicked() {
+    final MainActivity activity = (MainActivity) mActivity;
+    if(!MyApplication.connectSuccess){
+      RFIDUtils.getInstance(activity).connectAsync();
+    }
+    if(!MyApplication.connectSuccess){
+      return;
+    }
+
+    RFIDUtils.getInstance(activity).readAsync("InventoryAssetsFragment");
   }
 }

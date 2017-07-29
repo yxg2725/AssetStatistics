@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.AssetDetailActivity;
 import com.huadin.assetstatistics.app.MyApplication;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.R.attr.absListViewStyle;
+import static android.R.attr.tag;
 import static android.content.ContentValues.TAG;
 import static android.os.Build.VERSION_CODES.M;
 
@@ -44,10 +48,16 @@ public class RFIDUtils {
 
   private volatile  static RFIDUtils instance;//多线程访问
   public  Reader mReader;
-  private Context context;
+  private byte[] rdata;
+  private byte[] rpaswd;
+  private String stringTag;
+  private final SVProgressHUD dialog;
+  private  static Context context;
 
   //单例
-  public static RFIDUtils getInstance(){
+  public static RFIDUtils getInstance(Context context){
+    RFIDUtils.context = context;
+
     if (instance==null){
       synchronized (RFIDUtils.class){
         if (instance==null){
@@ -66,10 +76,12 @@ public class RFIDUtils {
     //初始化声音线程池
     soundPool = new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
     soundPool.load(MyApplication.getContext(), R.raw.beep51, 1);
+    dialog = new SVProgressHUD(context);
   }
 
   //连接
-  public  void connect() {
+  public  boolean connect() {
+
 
     RfidPower.PDATYPE PT = RfidPower.PDATYPE.valueOf(6);
     mRpower = new RfidPower(PT);
@@ -77,14 +89,42 @@ public class RFIDUtils {
     String s = mRpower.GetDevPath();
 
     boolean blen = mRpower.PowerUp();
-    Toast.makeText(MyApplication.getContext(), "上电："+blen, Toast.LENGTH_SHORT).show();
+   // Toast.makeText(MyApplication.getContext(), "上电："+blen, Toast.LENGTH_SHORT).show();
     boolean connect = isConnect();
-    if(connect){
+    return connect;
+    /*if(connect){
       MyApplication.connectSuccess = true;
       Toast.makeText(MyApplication.getContext(), "连接成功", Toast.LENGTH_SHORT).show();
     }else{
       MyApplication.connectSuccess = false;
       Toast.makeText(MyApplication.getContext(), "连接失败", Toast.LENGTH_SHORT).show();
+    }*/
+  }
+
+  public void connectAsync(){
+    new ConnectAsyncTask().execute();
+  }
+  class ConnectAsyncTask extends AsyncTask<Void,Void,Boolean>{
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+
+      return connect();
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+      super.onPostExecute(aBoolean);
+
+      if (aBoolean){
+
+        MyApplication.connectSuccess = true;
+        Toast.makeText(MyApplication.getContext(), "连接成功", Toast.LENGTH_SHORT).show();
+      }else{
+        MyApplication.connectSuccess = false;
+        dialog.showErrorWithStatus("连接失败");
+      }
+
     }
   }
 
@@ -178,24 +218,25 @@ public class RFIDUtils {
     }
   };
 
-
-  public void readOneByOne(Context context,String tag){
-    this.context = context;
+public void readAsync(String tag){
+  MyAsycnTask myAsycnTask = new MyAsycnTask();
+  myAsycnTask.execute(tag);
+}
+  public boolean readOneByOne(String tag){
     if(!MyApplication.connectSuccess){
       connect();
     }
 
     try {
       rParams.opant=1;
-      byte[] rdata=new byte[12];
-
-      byte[] rpaswd=new byte[4];
+      rdata = new byte[12];
+      rpaswd = new byte[4];
 
 
       Reader.READER_ERR er= Reader.READER_ERR.MT_OK_ERR;
-      int trycount=3;
+      int trycount=1;
       do{
-        er=mReader.GetTagData(rParams.opant, (char)1,2,6,rdata,rpaswd,(short)rParams.optime);
+        er=mReader.GetTagData(rParams.opant, (char)1,2,6, rdata, rpaswd,(short)rParams.optime);
 
         trycount--;
         if(trycount<1)
@@ -204,13 +245,12 @@ public class RFIDUtils {
 
       if(er== Reader.READER_ERR.MT_OK_ERR)
       {
-        String val="";
+        /*String val="";
         char[] out=null;
 
          out=new char[rdata.length*2];
           mReader.Hex2Str(rdata, rdata.length, out);
           val=String.valueOf(out);
-
         soundPool.play(1, 1, 1, 0, 0, 1);
         Toast.makeText(MyApplication.getContext(), "成功:"+val,
                 Toast.LENGTH_SHORT).show();
@@ -218,17 +258,57 @@ public class RFIDUtils {
         Intent intent = new Intent(context, AssetDetailActivity.class);
         intent.putExtra("tag",tag);
         intent.putExtra("result",val);
-        context.startActivity(intent);
+        context.startActivity(intent);*/
+
+        return true;
       }
       else{
+        /*
         Toast.makeText(MyApplication.getContext(), "失败:"+er.toString(),
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT).show();*/
+        return false;
       }
     } catch (Exception e) {
-      Toast.makeText(MyApplication.getContext(),e.toString(),Toast.LENGTH_SHORT).show();
+      return false;
+     /* Toast.makeText(MyApplication.getContext(),e.toString(),Toast.LENGTH_SHORT).show();*/
     }
   }
 
 
+  class MyAsycnTask extends AsyncTask<String,Void,Boolean>{
+
+    @Override
+    protected Boolean doInBackground(String... params) {
+      stringTag = params[0];
+      return readOneByOne(stringTag);
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+      if(aBoolean){
+        String val="";
+        char[] out=null;
+
+        out=new char[rdata.length*2];
+        mReader.Hex2Str(rdata, rdata.length, out);
+        val=String.valueOf(out);
+        soundPool.play(1, 1, 1, 0, 0, 1);
+        Toast.makeText(MyApplication.getContext(), "成功:"+val,
+                Toast.LENGTH_SHORT).show();
+
+        val = val.substring(val.length()-5);
+
+        Intent intent = new Intent(context, AssetDetailActivity.class);
+        intent.putExtra("tag",stringTag);
+        intent.putExtra("result",val);
+        context.startActivity(intent);
+
+      }else{
+        dialog.showErrorWithStatus("读取失败");
+      }
+      super.onPostExecute(aBoolean);
+
+    }
+  }
 
 }

@@ -21,4 +21,6 @@ public interface Contants {
 
   String TABLENAME = "安全工器具使用情况统计表.xls";
 
+  String[] GOODORBAD  = {"合格","不合格"};
+
 }

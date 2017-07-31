@@ -4,7 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <LinearLayout
+    <!--<LinearLayout
         android:orientation="horizontal"
         android:background="@color/colorAccent"
         android:layout_width="match_parent"
@@ -14,9 +14,9 @@
             android:text="个人信息设置"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-    </LinearLayout>
+    </LinearLayout>-->
 
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    </LinearLayout>
+    </LinearLayout>-->
 
     <!--关于我们-->
     <LinearLayout

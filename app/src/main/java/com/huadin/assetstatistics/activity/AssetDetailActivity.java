@@ -1,13 +1,11 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -15,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.app.MyApplication;
@@ -27,7 +24,7 @@ import com.huadin.assetstatistics.utils.DatePickDialogUtil;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.DialogUtils;
 import com.huadin.assetstatistics.utils.PinyinUtil;
-import com.huadin.assetstatistics.utils.ToastUtils;
+import com.huadin.assetstatistics.utils.SharedPreferenceUtils;
 import com.yanzhenjie.permission.AndPermission;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,8 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static android.R.attr.format;
-import static android.R.id.message;
+import static jxl.format.PaperSize.C;
 
 
 public class AssetDetailActivity extends BaseActivity {
@@ -114,6 +110,10 @@ public class AssetDetailActivity extends BaseActivity {
       //String format = String.format("%05d" , Long.valueOf(barcode));
       String jyx = PinyinUtil.getFirstletter(itemName);
       etArchivesNum.setText(jyx + "-"+barcode);
+
+      SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(this);
+      String checkPeople = sharedPreferenceUtils.getString("checkPeople");
+      etCheckPeople.setText(checkPeople);
     }
     //不存在则手动输入
 
@@ -175,6 +175,7 @@ public class AssetDetailActivity extends BaseActivity {
   }
 
   private void initView() {
+
     if(tag.equals("StorageFragment")){
       initToolbar(mToolbar, "资产入库", true);
     }else if(tag.equals("OutboundFragment")){
@@ -199,6 +200,12 @@ public class AssetDetailActivity extends BaseActivity {
     String checkDate = etCheckDate.getText().toString();
     String nextCheckDate = etNextCheckDate.getText().toString();
     String checkPeople = etCheckPeople.getText().toString();
+
+    //将校验员保存到本地
+    SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(this);
+    sharedPreferenceUtils.putString("checkPeople",checkPeople);
+
+
     String isGood = Contants.GOODORBAD[goodOrBadPosition];
 
 

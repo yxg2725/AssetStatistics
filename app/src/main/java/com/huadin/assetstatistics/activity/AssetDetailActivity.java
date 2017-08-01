@@ -2,10 +2,12 @@ package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -21,6 +23,7 @@ import com.huadin.assetstatistics.event.Event;
 import com.huadin.assetstatistics.utils.CameraUtil;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DatePickDialogUtil;
+import com.huadin.assetstatistics.utils.DateUtil;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.DialogUtils;
 import com.huadin.assetstatistics.utils.PinyinUtil;
@@ -29,11 +32,14 @@ import com.yanzhenjie.permission.AndPermission;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static jxl.format.PaperSize.C;
+import static java.lang.System.currentTimeMillis;
 
 
 public class AssetDetailActivity extends BaseActivity {
@@ -66,6 +72,12 @@ public class AssetDetailActivity extends BaseActivity {
   ImageView iv;
   @BindView(R.id.btn_save)
   Button btnSave;
+
+  @BindView(R.id.btn_check_num)
+  Button btnCheckNum;
+
+
+
   @BindView(R.id.ib_calendar_production_date)
   ImageButton ibCalendarProductionDate;
   @BindView(R.id.ib_calendar_check_date)
@@ -80,6 +92,8 @@ public class AssetDetailActivity extends BaseActivity {
   private String tag;
   private int selectedPosition = 0;
   private int goodOrBadPosition = 0;
+  private String imgPath;
+  private String szm;//首字母
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -96,20 +110,22 @@ public class AssetDetailActivity extends BaseActivity {
     tag = intent.getStringExtra("tag");
     //获取扫到的条码号
     barcode = intent.getStringExtra("result");
+    //照片路径
+    imgPath = Environment.getExternalStorageDirectory() + "/安全工器具/img/"  + barcode + ".jpg";
 
     //查询数据库
     mAssetDetail = DbUtils.queryByCode(AssetDetail.class, barcode);
 
 
+    String itemName = (String) spAssetsName.getSelectedItem();
+    //String format = String.format("%05d" , Long.valueOf(barcode));
+    szm = PinyinUtil.getFirstletter(itemName);//首字母
 
     if (mAssetDetail != null) {
       setresult(mAssetDetail);
       isExist = true;
     }else{
-      String itemName = (String) spAssetsName.getSelectedItem();
-      //String format = String.format("%05d" , Long.valueOf(barcode));
-      String jyx = PinyinUtil.getFirstletter(itemName);
-      etArchivesNum.setText(jyx + "-"+barcode);
+      etArchivesNum.setText(szm + "-DA-"+barcode);
 
       SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(this);
       String checkPeople = sharedPreferenceUtils.getString("checkPeople");
@@ -130,8 +146,17 @@ public class AssetDetailActivity extends BaseActivity {
 
         String itemName = (String) spAssetsName.getSelectedItem();
         //String format = String.format("%05d" , Long.valueOf(barcode));
-        String jyx = PinyinUtil.getFirstletter(itemName);
-        etArchivesNum.setText(jyx + "-"+barcode);
+        szm = PinyinUtil.getFirstletter(itemName);
+        etArchivesNum.setText(szm + "-DA-"+barcode);
+
+        if(mAssetDetail  == null){
+          String timeStamp = System.currentTimeMillis()+ "";
+          timeStamp = timeStamp.substring(timeStamp.length()-8);
+          if(!etCheckNum.getText().equals("")){
+            etCheckNum.setText(szm + "-JC-" + timeStamp);
+          }
+        }
+
       }
 
       @Override
@@ -146,6 +171,44 @@ public class AssetDetailActivity extends BaseActivity {
 
       @Override
       public void onNothingSelected(AdapterView<?> parent) {
+
+      }
+    });
+
+    iv.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View v) {
+        if (iv.getDrawable()!=null) {
+          DialogUtils.show(AssetDetailActivity.this, "提示", "是否删除此照片?", new DialogUtils.OnPositiveCall() {
+            @Override
+            public void goOn() {
+              MyApplication.showImageView("",iv);
+            }
+          });
+        }
+        return true;
+      }
+    });
+
+    etCheckDate.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        long l = DateUtil.convert2long(s.toString().trim(), "yyyy-MM-dd");
+        Date date = new Date(l);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        calendar.add(Calendar.MONTH,6);
+        String nextDate = DateUtil.timestamp2ymd(calendar.getTimeInMillis());
+        etNextCheckDate.setText(nextDate);
 
       }
     });
@@ -171,6 +234,7 @@ public class AssetDetailActivity extends BaseActivity {
     etCheckPeople.setText(assetDetail.getCheckPeople());
     int position = getSelectedPosition(assetDetail.getIsGood());
     spIsGood.setSelection(position);
+    MyApplication.showImageView(assetDetail.getImgPath(),iv);
 
   }
 
@@ -191,15 +255,15 @@ public class AssetDetailActivity extends BaseActivity {
     inputAssetDetail = new AssetDetail();
 
     String assetsName = Contants.assetsType[selectedPosition];
-    String assetsId = etAssetsId.getText().toString();
-    String company = etCompany.getText().toString();
-    String manufacturer = etManufacturer.getText().toString();
-    String dateOfProduction = etDateOfProduction.getText().toString();
-    String checkNum = etCheckNum.getText().toString();
-    String archivesNum = etArchivesNum.getText().toString();
-    String checkDate = etCheckDate.getText().toString();
-    String nextCheckDate = etNextCheckDate.getText().toString();
-    String checkPeople = etCheckPeople.getText().toString();
+    String assetsId = etAssetsId.getText().toString().trim();
+    String company = etCompany.getText().toString().trim();
+    String manufacturer = etManufacturer.getText().toString().trim();
+    String dateOfProduction = etDateOfProduction.getText().toString().trim();
+    String checkNum = etCheckNum.getText().toString().trim();
+    String archivesNum = etArchivesNum.getText().toString().trim();
+    String checkDate = etCheckDate.getText().toString().trim();
+    String nextCheckDate = etNextCheckDate.getText().toString().trim();
+    String checkPeople = etCheckPeople.getText().toString().trim();
 
     //将校验员保存到本地
     SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(this);
@@ -222,6 +286,10 @@ public class AssetDetailActivity extends BaseActivity {
     inputAssetDetail.setInspectionNumber(checkNum);
     inputAssetDetail.setIsGood(isGood);
 
+    if(iv.getDrawable() != null){
+      inputAssetDetail.setImgPath(imgPath);
+    }
+
     if(isGood.equals("合格")){
       if (tag.equals("OutboundFragment")) {
         inputAssetDetail.setExist("no");
@@ -241,7 +309,7 @@ public class AssetDetailActivity extends BaseActivity {
 
 
   @OnClick({R.id.btn_save,R.id.ib_calendar_production_date, R.id.ib_calendar_check_date,
-          R.id.ib_calendar_next_check_date,R.id.iv})
+          R.id.ib_calendar_next_check_date,R.id.iv,R.id.btn_check_num})
   public void onViewClicked(View view) {
     switch (view.getId()) {
       case R.id.btn_save:
@@ -264,13 +332,13 @@ public class AssetDetailActivity extends BaseActivity {
         }
 
         break;
-      case R.id.ib_calendar_production_date:
-        new DatePickDialogUtil(this,-1,false).datePicKDialog(etDateOfProduction);
+      case R.id.ib_calendar_production_date://出厂日期
+       new DatePickDialogUtil(this,-1,false).datePicKDialog(etDateOfProduction);
         break;
-      case R.id.ib_calendar_check_date:
+      case R.id.ib_calendar_check_date://校验日期
         new DatePickDialogUtil(this,-1,false).datePicKDialog(etCheckDate);
         break;
-      case R.id.ib_calendar_next_check_date:
+      case R.id.ib_calendar_next_check_date://下次校验日期
         new DatePickDialogUtil(this,-1,false).datePicKDialog(etNextCheckDate);
         break;
       case R.id.iv:
@@ -278,9 +346,14 @@ public class AssetDetailActivity extends BaseActivity {
             CameraUtil.takePhoto(this,barcode);
         } else {
           Intent intent = new Intent(this, ImageActivity.class);
-          intent.putExtra("name",barcode);
+          intent.putExtra("imgPath", imgPath);
           startActivity(intent);
         }
+        break;
+      case R.id.btn_check_num:
+        //自动生成检测编号
+        String checkNum = szm+ "-JC-" + currentTimeMillis();
+        etCheckNum.setText(checkNum);
         break;
     }
   }
@@ -299,8 +372,7 @@ public class AssetDetailActivity extends BaseActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (resultCode == RESULT_OK){
-      String path = Environment.getExternalStorageDirectory() + "/安全工器具/img/"  + barcode;
-      MyApplication.showImageView(path,iv);
+      MyApplication.showImageView(imgPath,iv);
     }
   }
 }

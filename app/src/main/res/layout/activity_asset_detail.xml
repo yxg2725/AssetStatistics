@@ -120,6 +120,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
+            android:enabled="false"
             android:id="@+id/et_date_of_production"
             android:padding="5dp"
             android:layout_weight="1"
@@ -149,7 +150,14 @@
         <EditText
             android:id="@+id/check_num"
             android:padding="5dp"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btn_check_num"
+            android:text="自动生成"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <!--档案编号-->
@@ -187,6 +195,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
+            android:enabled="false"
             android:id="@+id/et_check_date"
             android:padding="5dp"
             android:layout_width="0dp"
@@ -214,6 +223,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
+            android:enabled="false"
             android:id="@+id/et_next_check_date"
             android:padding="5dp"
             android:layout_width="0dp"
@@ -268,8 +278,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+
     <ImageView
-        android:visibility="gone"
         android:scaleType="centerCrop"
         android:id="@+id/iv"
         android:layout_gravity="center_horizontal"

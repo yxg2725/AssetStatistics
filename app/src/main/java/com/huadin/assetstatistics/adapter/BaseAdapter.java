@@ -38,6 +38,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter {
                 }
             }
         });
+
+
+
     }
 
     @Override
@@ -50,7 +53,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter {
     public OnItemClickListener onItemClickListener;
     public interface OnItemClickListener {
         void onItemClick(int position);
-    };
+    }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;

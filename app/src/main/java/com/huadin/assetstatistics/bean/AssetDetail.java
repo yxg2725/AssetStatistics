@@ -29,13 +29,14 @@ public class AssetDetail  implements Comparable<AssetDetail>{
     private String checkPeople;//检验员
     private String exist;//存在   出入库标志
     private String isGood;//是否合格
+    private String imgPath;//图片路径
 
-    @Generated(hash = 1903428405)
+    @Generated(hash = 1921311724)
     public AssetDetail(Long id, String barcode, String assetName, String enterTime,
             String people, String deviceId, String usedCompany,
             String manufacturer, String dateOfProduction, String inspectionNumber,
             String archivesNumber, String checkDate, String nextCheckDate,
-            String checkPeople, String exist, String isGood) {
+            String checkPeople, String exist, String isGood, String imgPath) {
         this.id = id;
         this.barcode = barcode;
         this.assetName = assetName;
@@ -52,6 +53,7 @@ public class AssetDetail  implements Comparable<AssetDetail>{
         this.checkPeople = checkPeople;
         this.exist = exist;
         this.isGood = isGood;
+        this.imgPath = imgPath;
     }
 
     @Generated(hash = 1757241519)
@@ -194,5 +196,13 @@ public class AssetDetail  implements Comparable<AssetDetail>{
 
     public void setIsGood(String isGood) {
         this.isGood = isGood;
+    }
+
+    public String getImgPath() {
+        return this.imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
     }
 }

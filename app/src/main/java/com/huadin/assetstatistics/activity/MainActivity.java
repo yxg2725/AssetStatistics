@@ -1,26 +1,17 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ContentUris;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,14 +20,12 @@ import android.widget.Toast;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.bean.AssetDetail;
-import com.huadin.assetstatistics.bean.AssetsStyle;
 import com.huadin.assetstatistics.fragment.InventoryAssetsFragment;
 import com.huadin.assetstatistics.fragment.OutboundFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
 import com.huadin.assetstatistics.fragment.StorageFragment;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
-import com.huadin.assetstatistics.utils.DialogUtils;
 import com.huadin.assetstatistics.utils.ExcelUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
@@ -45,17 +34,13 @@ import com.yanzhenjie.permission.AndPermission;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.R.attr.path;
-import static android.R.id.list;
-import static com.huadin.assetstatistics.utils.Contants.assetsType;
-import static com.huadin.assetstatistics.utils.ExcelUtils.writeObjListToExcel;
+import static android.R.attr.button;
 
 
 public class MainActivity extends BaseActivity {
@@ -78,7 +63,6 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
-
     RFIDUtils.getInstance(this).connectAsync();//连接RFID
 
     //权限申请
@@ -103,6 +87,7 @@ public class MainActivity extends BaseActivity {
     mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+
         switch (checkedId) {
           case R.id.rb_inventory:
             //切换资产库存fragment
@@ -110,6 +95,7 @@ public class MainActivity extends BaseActivity {
               mInventoryAssetsFragment = new InventoryAssetsFragment();
             }
             setFragmentShow(mInventoryAssetsFragment);
+            changeUi(group,0);
             break;
           case R.id.rb_outbound:
             //切换出库统计fragment
@@ -117,6 +103,7 @@ public class MainActivity extends BaseActivity {
               mOutboundFragment = new OutboundFragment();
             }
             setFragmentShow(mOutboundFragment);
+            changeUi(group,1);
             break;
           case R.id.rb_storage:
             //切换入库统计fragment
@@ -124,6 +111,7 @@ public class MainActivity extends BaseActivity {
               mStorageFragment = new StorageFragment();
             }
             setFragmentShow(mStorageFragment);
+            changeUi(group,2);
             break;
           case R.id.rb_setting:
             //切换设置fragment
@@ -131,11 +119,23 @@ public class MainActivity extends BaseActivity {
               mSettingFragment = new SettingFragment();
             }
             setFragmentShow(mSettingFragment);
+            changeUi(group,3);
             break;
         }
       }
     });
 
+  }
+
+  private void changeUi(RadioGroup group, int id) {
+    for (int i = 0; i < group.getChildCount(); i++) {
+      RadioButton button = (RadioButton) group.getChildAt(i);
+      if(i == id){
+        button.setTextColor(Color.WHITE);
+      }else{
+        button.setTextColor(Color.BLACK);
+      }
+    }
   }
 
 

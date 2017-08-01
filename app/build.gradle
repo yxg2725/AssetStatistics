@@ -67,4 +67,9 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    /*
+        compile 'com.speedata:libuhf:5.9'
+        compile 'com.speedata:deivice:1.1'*/
+    compile files('libs/ModuleAPI_Android_3.0.0.0.jar')
 }

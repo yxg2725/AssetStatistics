@@ -82,14 +82,14 @@ public class RFIDUtils {
   //连接
   public  boolean connect() {
 
-
-    RfidPower.PDATYPE PT = RfidPower.PDATYPE.valueOf(6);
+    //RfidPower.PDATYPE PT = RfidPower.PDATYPE.valueOf(4);
+    RfidPower.PDATYPE PT=RfidPower.PDATYPE.ALPS_KT45Q;
     mRpower = new RfidPower(PT);
 
     String s = mRpower.GetDevPath();
-
+    Log.i("RFIDUtils", "connect: " + s);
     boolean blen = mRpower.PowerUp();
-   // Toast.makeText(MyApplication.getContext(), "上电："+blen, Toast.LENGTH_SHORT).show();
+    Log.i("RFIDUtils", "上电: " + blen);
     boolean connect = isConnect();
     return connect;
     /*if(connect){
@@ -131,6 +131,7 @@ public class RFIDUtils {
   //是否连接
   public boolean isConnect(){
     Reader.READER_ERR er = mReader.InitReader_Notype(address, antportc);//"一天线"
+    Log.i("RFIDUtils", "er: " + er);
     if (er == Reader.READER_ERR.MT_OK_ERR) {
       return true;
     } else {

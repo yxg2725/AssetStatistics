@@ -1,14 +1,18 @@
 package com.huadin.assetstatistics.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flyco.labelview.LabelView;
 import com.huadin.assetstatistics.R;
+import com.huadin.assetstatistics.activity.ImageActivity;
+import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.utils.DatePickDialogUtil;
 
@@ -32,7 +36,7 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
 
   @Override
   public void setItemView(View itemView, int postion) {
-    AssetDetail assetDetail = list.get(postion);
+    final AssetDetail assetDetail = list.get(postion);
     TextView deveiceName = (TextView) itemView.findViewById(R.id.device_name);
     TextView deveiceId = (TextView) itemView.findViewById(R.id.device_id);
     TextView usedCompany = (TextView) itemView.findViewById(R.id.used_company);
@@ -43,9 +47,10 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     TextView checkDate = (TextView) itemView.findViewById(R.id.check_date);
     TextView nextCheckDate = (TextView) itemView.findViewById(R.id.next_check_date);
     TextView checkPeople = (TextView) itemView.findViewById(R.id.check_people);
+    ImageView iv = (ImageView) itemView.findViewById(R.id.iv);
     com.flyco.labelview.LabelView labelView = (LabelView) itemView.findViewById(R.id.labelView);
 
-
+    MyApplication.showImageView(assetDetail.getImgPath(),iv);//图片
     deveiceName.setText(assetDetail.getAssetName());//设备名称
     deveiceId.setText(assetDetail.getDeviceId());//设备型号
     usedCompany.setText(assetDetail.getUsedCompany());//使用单位
@@ -60,6 +65,20 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     labelView.setGravity(Gravity.TOP|Gravity.RIGHT);
     labelView.setBgColor (Color.parseColor("#3F9FE0"));
     labelView.setFillTriangle(true);
+
+
+    if(iv.getDrawable() != null){
+      iv.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Intent intent = new Intent(context, ImageActivity.class);
+          intent.putExtra("imgPath", assetDetail.getImgPath());
+          context.startActivity(intent);
+        }
+      });
+    }
+
+
   }
 
 

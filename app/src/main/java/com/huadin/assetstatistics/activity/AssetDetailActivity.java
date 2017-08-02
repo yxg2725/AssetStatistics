@@ -1,6 +1,7 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,6 +10,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +19,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.bigkoo.svprogresshud.listener.OnDismissListener;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
@@ -94,6 +99,7 @@ public class AssetDetailActivity extends BaseActivity {
   private int goodOrBadPosition = 0;
   private String imgPath;
   private String szm;//首字母
+  private SVProgressHUD dialog;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +112,16 @@ public class AssetDetailActivity extends BaseActivity {
             .permission(Manifest.permission.CAMERA)
             .start();
 
+    //刚开始隐藏软键盘
+    getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+    dialog = new SVProgressHUD(this);
+    dialog.setOnDismissListener(new OnDismissListener() {
+      @Override
+      public void onDismiss(SVProgressHUD hud) {
+        finish();
+      }
+    });
     Intent intent = getIntent();
     tag = intent.getStringExtra("tag");
     //获取扫到的条码号
@@ -125,8 +141,11 @@ public class AssetDetailActivity extends BaseActivity {
       setresult(mAssetDetail);
       isExist = true;
     }else{
-      etArchivesNum.setText(szm + "-DA-"+barcode);
+      if(tag.equals("InventoryAssetsFragment") || tag.equals("OutboundFragment")){
+        dialog.showInfoWithStatus("没有记录过此资产");
+      }
 
+      etArchivesNum.setText(szm + "-DA-"+barcode);
       SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(this);
       String checkPeople = sharedPreferenceUtils.getString("checkPeople");
       etCheckPeople.setText(checkPeople);
@@ -184,6 +203,7 @@ public class AssetDetailActivity extends BaseActivity {
             public void goOn() {
               MyApplication.showImageView("",iv);
             }
+
           });
         }
         return true;
@@ -232,8 +252,6 @@ public class AssetDetailActivity extends BaseActivity {
     etCheckDate.setText(assetDetail.getCheckDate());
     etNextCheckDate.setText(assetDetail.getNextCheckDate());
     etCheckPeople.setText(assetDetail.getCheckPeople());
-    int position = getSelectedPosition(assetDetail.getIsGood());
-    spIsGood.setSelection(position);
     MyApplication.showImageView(assetDetail.getImgPath(),iv);
 
   }
@@ -270,9 +288,6 @@ public class AssetDetailActivity extends BaseActivity {
     sharedPreferenceUtils.putString("checkPeople",checkPeople);
 
 
-    String isGood = Contants.GOODORBAD[goodOrBadPosition];
-
-
     inputAssetDetail.setCheckPeople(checkPeople);
     inputAssetDetail.setCheckDate(checkDate);
     inputAssetDetail.setManufacturer(manufacturer);
@@ -284,25 +299,25 @@ public class AssetDetailActivity extends BaseActivity {
     inputAssetDetail.setNextCheckDate(nextCheckDate);
     inputAssetDetail.setUsedCompany(company);
     inputAssetDetail.setInspectionNumber(checkNum);
-    inputAssetDetail.setIsGood(isGood);
 
     if(iv.getDrawable() != null){
       inputAssetDetail.setImgPath(imgPath);
     }
 
-    if(isGood.equals("合格")){
-      if (tag.equals("OutboundFragment")) {
-        inputAssetDetail.setExist("no");
-      } else if (tag.equals("StorageFragment")) {
-        inputAssetDetail.setExist("yes");
-      }
-    }
 
+    if (tag.equals("OutboundFragment")) {
+      inputAssetDetail.setExist("出库");
+    } else if (tag.equals("StorageFragment")) {
+      inputAssetDetail.setExist("入库");
+    }else if(tag.equals("InventoryAssetsFragment")){
+      inputAssetDetail.setExist(mAssetDetail.getExist());
+    }
 
     if (isExist) {
       //删除这条信息
       DbUtils.delete(mAssetDetail);
     }
+
     DbUtils.insert(inputAssetDetail);
 
   }
@@ -313,23 +328,41 @@ public class AssetDetailActivity extends BaseActivity {
   public void onViewClicked(View view) {
     switch (view.getId()) {
       case R.id.btn_save:
-        saveData();
-        //将数据传回去
-          Event.InventoryAssetsEvent inventoryAssetsEvent = new Event.InventoryAssetsEvent();
-          inventoryAssetsEvent.setAssetDetail(inputAssetDetail);
-          inventoryAssetsEvent.setTag(tag);
-          EventBus.getDefault().post(inventoryAssetsEvent);
+        String message = "";
+        if(tag.equals("StorageFragment")){
+          message = "确定入库？";
+        }else if(tag.equals("OutboundFragment")){
+          message = "确定出库？";
+        }else if(tag.equals("InventoryAssetsFragment")){
+          message = "确定修改？";
+        }
 
         if(((String)spIsGood.getSelectedItem()).equals("不合格")){
           DialogUtils.show(this, "提示", "该工具不合格，禁止使用！", new DialogUtils.OnPositiveCall() {
             @Override
             public void goOn() {
+              if(isExist){
+                DbUtils.delete(mAssetDetail);
+              }
               finish();
             }
           });
         }else{
-          finish();
+          DialogUtils.show(this, "提示", message, new DialogUtils.OnPositiveCall() {
+            @Override
+            public void goOn() {
+              saveData();
+              //将数据传回去
+              Event.InventoryAssetsEvent inventoryAssetsEvent = new Event.InventoryAssetsEvent();
+              inventoryAssetsEvent.setAssetDetail(inputAssetDetail);
+              inventoryAssetsEvent.setTag(tag);
+              EventBus.getDefault().post(inventoryAssetsEvent);
+              finish();
+            }
+
+          });
         }
+
 
         break;
       case R.id.ib_calendar_production_date://出厂日期

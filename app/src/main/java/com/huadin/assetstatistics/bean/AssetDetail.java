@@ -28,15 +28,15 @@ public class AssetDetail  implements Comparable<AssetDetail>{
     private String nextCheckDate;//下次检测日期
     private String checkPeople;//检验员
     private String exist;//存在   出入库标志
-    private String isGood;//是否合格
     private String imgPath;//图片路径
 
-    @Generated(hash = 1921311724)
+
+    @Generated(hash = 357989332)
     public AssetDetail(Long id, String barcode, String assetName, String enterTime,
             String people, String deviceId, String usedCompany,
             String manufacturer, String dateOfProduction, String inspectionNumber,
             String archivesNumber, String checkDate, String nextCheckDate,
-            String checkPeople, String exist, String isGood, String imgPath) {
+            String checkPeople, String exist, String imgPath) {
         this.id = id;
         this.barcode = barcode;
         this.assetName = assetName;
@@ -52,133 +52,14 @@ public class AssetDetail  implements Comparable<AssetDetail>{
         this.nextCheckDate = nextCheckDate;
         this.checkPeople = checkPeople;
         this.exist = exist;
-        this.isGood = isGood;
         this.imgPath = imgPath;
     }
+
 
     @Generated(hash = 1757241519)
     public AssetDetail() {
     }
 
-    public String getAssetName() {
-        return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-        this.assetName = assetName;
-    }
-
-    public String getEnterTime() {
-        return enterTime;
-    }
-
-    public void setEnterTime(String enterTime) {
-        this.enterTime = enterTime;
-    }
-
-    public String getPeople() {
-        return people;
-    }
-
-    public void setPeople(String people) {
-        this.people = people;
-    }
-
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public String getUsedCompany() {
-        return usedCompany;
-    }
-
-    public void setUsedCompany(String usedCompany) {
-        this.usedCompany = usedCompany;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public String getDateOfProduction() {
-        return dateOfProduction;
-    }
-
-    public void setDateOfProduction(String dateOfProduction) {
-        this.dateOfProduction = dateOfProduction;
-    }
-
-    public String getInspectionNumber() {
-        return inspectionNumber;
-    }
-
-    public void setInspectionNumber(String inspectionNumber) {
-        this.inspectionNumber = inspectionNumber;
-    }
-
-    public String getArchivesNumber() {
-        return archivesNumber;
-    }
-
-    public void setArchivesNumber(String archivesNumber) {
-        this.archivesNumber = archivesNumber;
-    }
-
-    public String getCheckDate() {
-        return checkDate;
-    }
-
-    public void setCheckDate(String checkDate) {
-        this.checkDate = checkDate;
-    }
-
-    public String getNextCheckDate() {
-        return nextCheckDate;
-    }
-
-    public void setNextCheckDate(String nextCheckDate) {
-        this.nextCheckDate = nextCheckDate;
-    }
-
-    public String getCheckPeople() {
-        return checkPeople;
-    }
-
-    public void setCheckPeople(String checkPeople) {
-        this.checkPeople = checkPeople;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getBarcode() {
-        return this.barcode;
-    }
-
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
-    }
-
-    public String getExist() {
-        return this.exist;
-    }
-
-    public void setExist(String exist) {
-        this.exist = exist;
-    }
 
     @Override
     public int compareTo(@NonNull AssetDetail o) {
@@ -190,19 +71,166 @@ public class AssetDetail  implements Comparable<AssetDetail>{
             return -1;
     }
 
-    public String getIsGood() {
-        return this.isGood;
-    }
-
-    public void setIsGood(String isGood) {
-        this.isGood = isGood;
-    }
 
     public String getImgPath() {
         return this.imgPath;
     }
 
+
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
     }
+
+
+    public String getExist() {
+        return this.exist;
+    }
+
+
+    public void setExist(String exist) {
+        this.exist = exist;
+    }
+
+
+    public String getCheckPeople() {
+        return this.checkPeople;
+    }
+
+
+    public void setCheckPeople(String checkPeople) {
+        this.checkPeople = checkPeople;
+    }
+
+
+    public String getNextCheckDate() {
+        return this.nextCheckDate;
+    }
+
+
+    public void setNextCheckDate(String nextCheckDate) {
+        this.nextCheckDate = nextCheckDate;
+    }
+
+
+    public String getCheckDate() {
+        return this.checkDate;
+    }
+
+
+    public void setCheckDate(String checkDate) {
+        this.checkDate = checkDate;
+    }
+
+
+    public String getArchivesNumber() {
+        return this.archivesNumber;
+    }
+
+
+    public void setArchivesNumber(String archivesNumber) {
+        this.archivesNumber = archivesNumber;
+    }
+
+
+    public String getInspectionNumber() {
+        return this.inspectionNumber;
+    }
+
+
+    public void setInspectionNumber(String inspectionNumber) {
+        this.inspectionNumber = inspectionNumber;
+    }
+
+
+    public String getDateOfProduction() {
+        return this.dateOfProduction;
+    }
+
+
+    public void setDateOfProduction(String dateOfProduction) {
+        this.dateOfProduction = dateOfProduction;
+    }
+
+
+    public String getManufacturer() {
+        return this.manufacturer;
+    }
+
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+
+    public String getUsedCompany() {
+        return this.usedCompany;
+    }
+
+
+    public void setUsedCompany(String usedCompany) {
+        this.usedCompany = usedCompany;
+    }
+
+
+    public String getDeviceId() {
+        return this.deviceId;
+    }
+
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+
+    public String getPeople() {
+        return this.people;
+    }
+
+
+    public void setPeople(String people) {
+        this.people = people;
+    }
+
+
+    public String getEnterTime() {
+        return this.enterTime;
+    }
+
+
+    public void setEnterTime(String enterTime) {
+        this.enterTime = enterTime;
+    }
+
+
+    public String getAssetName() {
+        return this.assetName;
+    }
+
+
+    public void setAssetName(String assetName) {
+        this.assetName = assetName;
+    }
+
+
+    public String getBarcode() {
+        return this.barcode;
+    }
+
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+
 }

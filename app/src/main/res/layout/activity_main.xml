@@ -17,24 +17,28 @@
         android:layout_height="?attr/actionBarSize"/>
 
     <FrameLayout
-        android:layout_above="@+id/bottom"
+        android:layout_above="@+id/view_line"
         android:layout_marginTop="?attr/actionBarSize"
         android:id="@+id/fl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </FrameLayout>
-
+    <View
+        android:id="@+id/view_line"
+        android:layout_above="@+id/bottom"
+        android:background="@android:color/darker_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
     <LinearLayout
 
         android:id="@+id/bottom"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:background="@color/colorAccent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <RadioGroup
             android:id="@+id/radio_group"
             android:gravity="center_vertical"
@@ -72,6 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
             <RadioButton
+                android:visibility="gone"
                 android:id="@+id/rb_setting"
                 android:button="@null"
                 android:text="设置"

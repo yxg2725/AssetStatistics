@@ -3,6 +3,7 @@ package com.huadin.assetstatistics.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.event.Event;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
+import com.huadin.assetstatistics.widget.MyFab;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,7 +42,7 @@ import butterknife.Unbinder;
 public class StorageFragment extends BaseFragment {
 
   @BindView(R.id.btn_scan)
-  Button mBtnScan;
+  MyFab mBtnScan;
   @BindView(R.id.rv)
   RecyclerView mRv;
   Unbinder unbinder;
@@ -79,7 +81,7 @@ public class StorageFragment extends BaseFragment {
 
   private void initData() {
     //查询数据库 已入库的资产 并且是合格的
-    List<AssetDetail> list = DbUtils.queryByExistAndGood(AssetDetail.class, "yes");
+    List<AssetDetail> list = DbUtils.queryByExist(AssetDetail.class, "入库");
     assetDetails.clear();
     assetDetails.addAll(list);
     mAdapter.notifyDataSetChanged();

@@ -51,6 +51,10 @@ dependencies {
     /*权限*/
     compile files('libs/pinyin4j-2.5.0.jar')
     //图片框架
+    /*
+        compile 'com.speedata:libuhf:5.9'
+        compile 'com.speedata:deivice:1.1'*/
+    compile files('libs/ModuleAPI_Android_3.0.0.0.jar')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support:recyclerview-v7:25.0.0'
@@ -65,11 +69,7 @@ dependencies {
     compile 'com.yanzhenjie:permission:1.0.8'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
-    compile 'com.github.chrisbanes:PhotoView:1.2.6'
-    /*
-        compile 'com.speedata:libuhf:5.9'
-        compile 'com.speedata:deivice:1.1'*/
-    compile files('libs/ModuleAPI_Android_3.0.0.0.jar')
 }

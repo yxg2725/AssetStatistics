@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.flyco.labelview.LabelView;
@@ -47,7 +48,9 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     TextView checkDate = (TextView) itemView.findViewById(R.id.check_date);
     TextView nextCheckDate = (TextView) itemView.findViewById(R.id.next_check_date);
     TextView checkPeople = (TextView) itemView.findViewById(R.id.check_people);
-    ImageView iv = (ImageView) itemView.findViewById(R.id.iv);
+    final ImageView iv = (ImageView) itemView.findViewById(R.id.iv);
+    final ImageView ivDown = (ImageView) itemView.findViewById(R.id.iv_down);
+    final LinearLayout llBottom = (LinearLayout) itemView.findViewById(R.id.ll_bottom);
     com.flyco.labelview.LabelView labelView = (LabelView) itemView.findViewById(R.id.labelView);
 
     MyApplication.showImageView(assetDetail.getImgPath(),iv);//图片
@@ -67,16 +70,31 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     labelView.setFillTriangle(true);
 
 
-    if(iv.getDrawable() != null){
+
       iv.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+          if(iv.getDrawable() != null){
           Intent intent = new Intent(context, ImageActivity.class);
           intent.putExtra("imgPath", assetDetail.getImgPath());
           context.startActivity(intent);
+          }
         }
       });
-    }
+
+    ivDown.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if(llBottom.getVisibility() == View.GONE){
+          llBottom.setVisibility(View.VISIBLE);
+          MyApplication.showImageView(R.drawable.arrow_up,ivDown);
+        }else{
+          llBottom.setVisibility(View.GONE);
+          MyApplication.showImageView(R.drawable.arrow_down,ivDown);
+        }
+
+      }
+    });
 
 
   }

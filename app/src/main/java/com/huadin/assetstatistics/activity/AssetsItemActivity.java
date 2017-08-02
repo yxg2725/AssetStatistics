@@ -113,13 +113,13 @@ public class AssetsItemActivity extends BaseActivity {
       List<AssetDetail> list = null;
       switch (categoryId){
         case 0://所有
-          list = DbUtils.queryByNameAndGood(AssetDetail.class, assetName);
+          list = DbUtils.queryByName(AssetDetail.class, assetName);
           break;
         case 1://出库
-          list = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, assetName,"no");
+          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"no");
           break;
         case 2://入库
-          list = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, assetName,"yes");
+          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"yes");
           break;
       }
 

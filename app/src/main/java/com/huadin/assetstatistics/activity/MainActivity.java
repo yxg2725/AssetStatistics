@@ -1,6 +1,7 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -128,6 +129,7 @@ public class MainActivity extends BaseActivity {
   }
 
   private void changeUi(RadioGroup group, int id) {
+
     for (int i = 0; i < group.getChildCount(); i++) {
       RadioButton button = (RadioButton) group.getChildAt(i);
       if(i == id){
@@ -156,6 +158,10 @@ public class MainActivity extends BaseActivity {
     switch (item.getItemId()) {
       case R.id.menu_import:
         ToastUtils.show(mToolbar, "数据导入");
+        break;
+      case R.id.menu_about:
+        Intent intent = new Intent(this,AboutActivity.class);
+        startActivity(intent);
         break;
       case R.id.menu_export:
         dialog.showWithStatus("导出中...");
@@ -209,15 +215,15 @@ public class MainActivity extends BaseActivity {
 
           List3.add(Contants.assetsType[i]);
           //总个数查询
-          List<AssetDetail> list1 = DbUtils.queryByNameAndGood(AssetDetail.class, Contants.assetsType[i]);
+          List<AssetDetail> list1 = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
           List3.add(list1.size() + "");
 
           //库存个数查询
-          List<AssetDetail> existList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "yes");
+          List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "入库");
           List3.add(existList.size() + "");
 
           //出库个数查询
-          List<AssetDetail> outList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "no");
+          List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "出库");
           List3.add(outList.size() + "");
 
           totalList.add(List3);

@@ -23,7 +23,11 @@ import com.uhf.api.cls.Reader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static android.R.attr.absListViewStyle;
 import static android.R.attr.tag;
@@ -44,7 +48,7 @@ public class RFIDUtils {
   public   RfidPower mRpower;
 
   public Handler mHandler = new Handler();
-
+  public Set<String> hashSet = new HashSet<>();
 
   private volatile  static RFIDUtils instance;//多线程访问
   public  Reader mReader;
@@ -53,7 +57,6 @@ public class RFIDUtils {
   private String stringTag;
   private final SVProgressHUD dialog;
   private  static Context context;
-
   //单例
   public static RFIDUtils getInstance(Context context){
     RFIDUtils.context = context;
@@ -312,4 +315,86 @@ public void readAsync(String tag){
     }
   }
 
+
+  public void readBatch(){
+    mHandler.postDelayed(runnable_MainActivity,0);
+  }
+  private Runnable runnable_MainActivity = new Runnable() {
+    public void run() {
+
+      String[] tag = null;
+
+      int[] tagcnt = new int[1];
+
+      tagcnt[0] = 0;
+
+      synchronized (this) {
+        Reader.READER_ERR er = mReader.TagInventory_Raw
+                (rParams.uants, rParams.uants.length,
+                        (short) rParams.readtime, tagcnt);
+
+        Log.d("MYINFO", "read:" + er.toString() + " cnt:" + String.valueOf(tagcnt[0]));
+
+        if (er == Reader.READER_ERR.MT_OK_ERR) {
+          if (tagcnt[0] > 0) {
+            //扫描了多少个
+           // tv_once.setText(String.valueOf(tagcnt[0]));
+
+            soundPool.play(1, 1, 1, 0, 0, 1);
+            tag = new String[tagcnt[0]];
+
+            for (int i = 0; i < tagcnt[0]; i++) {
+              Reader.TAGINFO tfs = mReader.new TAGINFO();
+              if (mRpower.GetType() == RfidPower.PDATYPE.SCAN_ALPS_ANDROID_CUIUS2) {
+                try {
+                  Thread.sleep(10);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+              }
+              er = mReader.GetNextTag(tfs);
+              Log.d("MYINFO", "get tag index:" + String.valueOf(i) + " er:" + er.toString());
+              if (er == Reader.READER_ERR.MT_HARDWARE_ALERT_ERR_BY_TOO_MANY_RESET) {
+
+                /*tv_state.setText("error:" + String.valueOf(er.value()) + er.toString());
+                myapp.needreconnect = true;
+                button_stop.performClick();
+                autostop = true;*/
+              }
+
+
+              if (er == Reader.READER_ERR.MT_OK_ERR) {
+                tag[i] = Reader.bytes_Hexstr(tfs.EpcId);
+                hashSet.add(tag[i]);
+              } else
+                break;
+            }
+          }
+
+        } else {
+         // tv_state.setText("error:" + String.valueOf(er.value()) + " " + er.toString());
+          if (er == Reader.READER_ERR.MT_HARDWARE_ALERT_ERR_BY_TOO_MANY_RESET) {
+            /*tv_state.setText("error:" + String.valueOf(er.value()) + er.toString());
+            myapp.needreconnect = true;
+            button_stop.performClick();
+            autostop = true;*/
+          } else
+            mHandler.postDelayed(this, rParams.sleep);
+          return;
+
+        }
+      }
+
+
+
+      //*读大量标签不显示
+      if (tagcnt[0] > 0) {
+        Log.i("geshu", "run: " + hashSet.size());
+
+
+      }
+
+      mHandler.postDelayed(this, rParams.sleep);
+    }
+  };
 }

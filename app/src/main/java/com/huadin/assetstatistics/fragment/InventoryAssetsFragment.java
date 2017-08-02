@@ -3,6 +3,7 @@ package com.huadin.assetstatistics.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.huadin.assetstatistics.event.Event;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
+import com.huadin.assetstatistics.widget.MyFab;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -44,10 +46,10 @@ public class InventoryAssetsFragment extends BaseFragment {
 
   @BindView(R.id.recyclerview)
   RecyclerView mRecyclerview;
-  @BindView(R.id.btn_check)
-  Button btnCheck;
   @BindView(R.id.ll_table_title)
   LinearLayout mLlTableTitle;
+  @BindView(R.id.btn_check)
+  MyFab btnCheck;
   Unbinder unbinder;
   private MyAdapter mAdapter;
   private ArrayList<AssetsStyle> assets;
@@ -97,15 +99,15 @@ public class InventoryAssetsFragment extends BaseFragment {
       asset.setAsssetStyle(Contants.assetsType[i]);
 
       //总个数查询
-      List<AssetDetail> list = DbUtils.queryByNameAndGood(AssetDetail.class, Contants.assetsType[i]);
+      List<AssetDetail> list = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
       asset.setCount(list.size());
 
       //库存个数查询
-      List<AssetDetail> existList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "yes");
+      List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "入库");
       asset.setExistNum(existList.size());
 
       //出库个数查询
-      List<AssetDetail> outList = DbUtils.queryByStyleAndExistAndGood(AssetDetail.class, Contants.assetsType[i], "no");
+      List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "出库");
       asset.setOutNum(outList.size());
 
       assets.add(asset);

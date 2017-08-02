@@ -38,9 +38,9 @@ public class DbUtils {
   }
 
 //  根据工具名称的查询
-  public static<T> List<T> queryByNameAndGood(Class<T> clazz,String name){
+  public static<T> List<T> queryByName(Class<T> clazz,String name){
     DaoSession daoSession = DaoManager.getInstance().getDaoSession();
-    List<T> list = daoSession.queryBuilder(clazz).where(AssetDetailDao.Properties.IsGood.eq("合格"),AssetDetailDao.Properties.AssetName.eq(name)).build().list();
+    List<T> list = daoSession.queryBuilder(clazz).where(AssetDetailDao.Properties.AssetName.eq(name)).build().list();
     return list;
   }
 
@@ -55,17 +55,17 @@ public class DbUtils {
   }
 
   //是否在库中的查询
-  public static<T> List<T> queryByExistAndGood(Class<T> clazz,String exist){
+  public static<T> List<T> queryByExist(Class<T> clazz,String exist){
     DaoSession daoSession = DaoManager.getInstance().getDaoSession();
-    List<T> list = daoSession.queryBuilder(clazz).where(AssetDetailDao.Properties.Exist.eq(exist),AssetDetailDao.Properties.IsGood.eq("合格")).build().list();
+    List<T> list = daoSession.queryBuilder(clazz).where(AssetDetailDao.Properties.Exist.eq(exist)).build().list();
 
     return list;
   }
   //指定类型的工具 是否在库中的查询
-  public static<T> List<T> queryByStyleAndExistAndGood(Class<T> clazz,String assetName,String exist){
+  public static<T> List<T> queryByStyleAndExist(Class<T> clazz,String assetName,String exist){
     DaoSession daoSession = DaoManager.getInstance().getDaoSession();
     List<T> list = daoSession.queryBuilder(clazz).where(AssetDetailDao.Properties.AssetName.eq(assetName),
-            AssetDetailDao.Properties.Exist.eq(exist),AssetDetailDao.Properties.IsGood.eq("合格")).build().list();
+            AssetDetailDao.Properties.Exist.eq(exist)).build().list();
 
     return list;
   }

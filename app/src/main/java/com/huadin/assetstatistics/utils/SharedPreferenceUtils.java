@@ -29,5 +29,12 @@ public class SharedPreferenceUtils {
     return mSp.getString(key,"");
   }
 
+  public void putBoolean(String key,boolean b){
+    mSp.edit().putBoolean(key,b).commit();
+  }
 
+  public boolean getBoolean(String key,boolean def){
+    boolean aBoolean = mSp.getBoolean(key, def);
+    return aBoolean;
+  }
 }

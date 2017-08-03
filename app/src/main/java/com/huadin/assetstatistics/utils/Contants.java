@@ -23,4 +23,6 @@ public interface Contants {
 
   String[] GOODORBAD  = {"合格","不合格"};
 
+  String PATCH_SCAN = "patch_scan";
+
 }

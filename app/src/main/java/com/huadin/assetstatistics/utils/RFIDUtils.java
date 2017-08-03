@@ -6,6 +6,8 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +22,8 @@ import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.ReaderParams;
 import com.pow.api.cls.RfidPower;
 import com.uhf.api.cls.Reader;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +51,7 @@ public class RFIDUtils {
   private final ReaderParams rParams;
   public   RfidPower mRpower;
 
-  public Handler mHandler = new Handler();
+  public static Handler mHandler = new Handler();
   public Set<String> hashSet = new HashSet<>();
 
   private volatile  static RFIDUtils instance;//多线程访问
@@ -148,6 +152,9 @@ public class RFIDUtils {
       mReader.CloseReader();
     }
     boolean blen = mRpower.PowerDown();
+    if(blen){
+      MyApplication.connectSuccess = false;
+    }
     Toast.makeText(MyApplication.getContext(), "断开读写器，下电：" + String.valueOf(blen), Toast.LENGTH_SHORT).show();
   }
 
@@ -316,10 +323,16 @@ public void readAsync(String tag){
   }
 
 
-  public void readBatch(){
-    mHandler.postDelayed(runnable_MainActivity,0);
+  public void readBatch(Context contxt){
+    if(!MyApplication.connectSuccess){
+      RFIDUtils.getInstance(contxt).connect();
+    }
+
+    if(MyApplication.connectSuccess){
+      mHandler.postDelayed(runnable_MainActivity,0);
+    }
   }
-  private Runnable runnable_MainActivity = new Runnable() {
+  public Runnable runnable_MainActivity = new Runnable() {
     public void run() {
 
       String[] tag = null;
@@ -365,7 +378,8 @@ public void readAsync(String tag){
 
               if (er == Reader.READER_ERR.MT_OK_ERR) {
                 tag[i] = Reader.bytes_Hexstr(tfs.EpcId);
-                hashSet.add(tag[i]);
+                String val = tag[i].substring(tag[i].length()-5);
+                hashSet.add(val);
               } else
                 break;
             }
@@ -387,11 +401,10 @@ public void readAsync(String tag){
 
 
 
-      //*读大量标签不显示
+      //*读大量标签并显示
       if (tagcnt[0] > 0) {
         Log.i("geshu", "run: " + hashSet.size());
-
-
+        EventBus.getDefault().post(hashSet);
       }
 
       mHandler.postDelayed(this, rParams.sleep);

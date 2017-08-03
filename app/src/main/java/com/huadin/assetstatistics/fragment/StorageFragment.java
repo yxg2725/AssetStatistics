@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,15 @@ import android.widget.Toast;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.AssetDetailActivity;
 import com.huadin.assetstatistics.activity.MainActivity;
+import com.huadin.assetstatistics.activity.PatchScanActivity;
 import com.huadin.assetstatistics.adapter.OutAssetsAdapter;
 import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.event.Event;
+import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
+import com.huadin.assetstatistics.utils.SharedPreferenceUtils;
 import com.huadin.assetstatistics.widget.MyFab;
 
 import org.greenrobot.eventbus.EventBus;
@@ -34,6 +38,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * 入库统计
@@ -94,9 +100,9 @@ public class StorageFragment extends BaseFragment {
 
   @OnClick(R.id.btn_scan)
   public void onViewClicked() {
-    final MainActivity activity = (MainActivity) mActivity;
+
     if(!MyApplication.connectSuccess){
-          RFIDUtils.getInstance(activity).connectAsync();
+          RFIDUtils.getInstance(mActivity).connectAsync();
     }
     if(!MyApplication.connectSuccess){
       return;
@@ -108,7 +114,18 @@ public class StorageFragment extends BaseFragment {
     intent.putExtra("result","000001");
     activity.startActivity(intent);*/
 
-    RFIDUtils.getInstance(activity).readAsync("StorageFragment");
+
+    SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(mActivity);
+    boolean isBatchScan = sharedPreferenceUtils.getBoolean(Contants.PATCH_SCAN, false);
+    Log.i("isBatchScan", "isBatchScan: " + isBatchScan);
+    if(!isBatchScan){//逐一扫描
+      RFIDUtils.getInstance(mActivity).readAsync("StorageFragment");
+    }else{//批量扫描
+      Intent intent = new Intent(mActivity, PatchScanActivity.class);
+      intent.putExtra("tag","StorageFragment");
+      mActivity.startActivity(intent);
+    }
+
   }
 
 

@@ -33,6 +33,8 @@
         </activity>
         <activity android:name=".activity.AboutActivity">
         </activity>
+        <activity android:name=".activity.PatchScanActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -18,10 +18,23 @@ import com.huadin.assetstatistics.R;
 
 public class DialogUtils {
 
+  private static DialogUtils dialogUtils;
+
+  public static DialogUtils getInstance(){
+    if (dialogUtils == null){
+      dialogUtils = new DialogUtils();
+    }
+  return dialogUtils;
+}
+  private static AlertDialog.Builder dialog;
+  private static MaterialDialog.Builder builder;
+  public  MaterialDialog dialog1;
 
   public static void show(final Activity context, String title, String message, final OnPositiveCall call){
 
-    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+    if(dialog == null){
+      dialog = new AlertDialog.Builder(context);
+    }
 
     dialog.setTitle(title);
     dialog.setIcon(android.R.drawable.ic_dialog_alert);
@@ -48,20 +61,32 @@ public class DialogUtils {
 
   }
 
-  public static void showMDDialog(Context context){
-    MaterialDialog.Builder builder = new MaterialDialog.Builder(context)
-            .title("入库资产")
-            .customView(R.layout.custom_dialog, true)
-            .positiveText("确定")
-            .negativeText("取消")
-            .onPositive(new MaterialDialog.SingleButtonCallback() {
-              @Override
-              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+  public  void showMDDialog(Context context, String title, String message, final OnPositiveCall call){
+    if(builder == null){
+      builder = new MaterialDialog.Builder(context);
+    }
 
-              }
-            });
-    MaterialDialog dialog = builder.build();
-    dialog.show();
+    if(dialog1 != null && dialog1.isShowing()){
+      dialog1.setContent(message);
+    }else{
+      builder.title(title)
+              .content(message)
+              .positiveText("停止")
+              .negativeText("取消")
+              .onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                  if(call != null){
+                    call.goOn();
+
+                  }
+                }
+              });
+      dialog1 = builder.build();
+      dialog1.setCancelable(false);
+      dialog1.show();
+    }
 
   }
 

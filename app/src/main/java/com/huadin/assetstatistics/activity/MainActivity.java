@@ -9,6 +9,7 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,7 @@ import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.ExcelUtils;
 import com.huadin.assetstatistics.utils.RFIDUtils;
+import com.huadin.assetstatistics.utils.SharedPreferenceUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
 import com.yanzhenjie.permission.AndPermission;
 
@@ -58,6 +60,8 @@ public class MainActivity extends BaseActivity {
   private SettingFragment mSettingFragment;
   private SVProgressHUD dialog;
   private String path;
+  private String TAG = "MainActivity";
+  private SharedPreferenceUtils sharedPreferenceUtils;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,7 @@ public class MainActivity extends BaseActivity {
   private void initView() {
     initToolbar(mToolbar, "", false);
     dialog = new SVProgressHUD(this);
+    sharedPreferenceUtils = new SharedPreferenceUtils(this);
   }
 
   private void initListener() {
@@ -149,6 +154,9 @@ public class MainActivity extends BaseActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.inventory_menu, menu);
+    MenuItem item = menu.getItem(0);
+    boolean aBoolean = sharedPreferenceUtils.getBoolean(Contants.PATCH_SCAN, false);
+    item.setChecked(aBoolean);
     return true;
 
   }
@@ -156,6 +164,15 @@ public class MainActivity extends BaseActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+      case R.id.menu_scan_patch:
+        item.setChecked(item.isChecked() ? false:true);
+        Log.i("check", "item.isChecked(): " + item.isChecked());
+        if(item.isChecked()){
+          sharedPreferenceUtils.putBoolean(Contants.PATCH_SCAN,true);
+        }else{
+          sharedPreferenceUtils.putBoolean(Contants.PATCH_SCAN,false);
+        }
+        break;
       case R.id.menu_import:
         ToastUtils.show(mToolbar, "数据导入");
         break;

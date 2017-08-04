@@ -69,4 +69,9 @@ public class DbUtils {
 
     return list;
   }
+
+  public static<T> void update(T bean){
+    DaoSession daoSession = DaoManager.getInstance().getDaoSession();
+    daoSession.update(bean);
+  }
 }

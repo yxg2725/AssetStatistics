@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -23,9 +22,8 @@ import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.fragment.InventoryAssetsFragment;
-import com.huadin.assetstatistics.fragment.OutboundFragment;
+import com.huadin.assetstatistics.fragment.OutAndEnterFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
-import com.huadin.assetstatistics.fragment.StorageFragment;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.ExcelUtils;
@@ -43,8 +41,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.R.attr.button;
-
 
 public class MainActivity extends BaseActivity {
 
@@ -55,8 +51,8 @@ public class MainActivity extends BaseActivity {
   @BindView(R.id.radio_group)
   RadioGroup mRadioGroup;
   private InventoryAssetsFragment mInventoryAssetsFragment;
-  private OutboundFragment mOutboundFragment;
-  private StorageFragment mStorageFragment;
+  private OutAndEnterFragment mOutboundFragment;
+  private OutAndEnterFragment mOutAndEnterFragment;
   private SettingFragment mSettingFragment;
   private SVProgressHUD dialog;
   private String path;
@@ -106,26 +102,34 @@ public class MainActivity extends BaseActivity {
           case R.id.rb_outbound:
             //切换出库统计fragment
             if (mOutboundFragment == null) {
-              mOutboundFragment = new OutboundFragment();
+              mOutboundFragment = new OutAndEnterFragment();
             }
+            Bundle bundle = new Bundle();
+            bundle.putString("tag","out");
+            mOutboundFragment.setArguments(bundle);
+
             setFragmentShow(mOutboundFragment);
             changeUi(group,1);
             break;
           case R.id.rb_storage:
             //切换入库统计fragment
-            if (mStorageFragment == null) {
-              mStorageFragment = new StorageFragment();
+            if (mOutAndEnterFragment == null) {
+              mOutAndEnterFragment = new OutAndEnterFragment();
             }
-            setFragmentShow(mStorageFragment);
+
+            Bundle bundle2 = new Bundle();
+            bundle2.putString("tag","enter");
+            mOutAndEnterFragment.setArguments(bundle2);
+            setFragmentShow(mOutAndEnterFragment);
             changeUi(group,2);
             break;
           case R.id.rb_setting:
-            //切换设置fragment
+            /*//切换设置fragment
             if (mSettingFragment == null) {
               mSettingFragment = new SettingFragment();
             }
-            setFragmentShow(mSettingFragment);
-            changeUi(group,3);
+            setFragmentShow(mSettingFragment,"");
+            changeUi(group,3);*/
             break;
         }
       }

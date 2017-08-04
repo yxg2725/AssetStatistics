@@ -26,16 +26,12 @@ public class DialogUtils {
     }
   return dialogUtils;
 }
-  private static AlertDialog.Builder dialog;
-  private static MaterialDialog.Builder builder;
-  public  MaterialDialog dialog1;
 
-  public static void show(final Activity context, String title, String message, final OnPositiveCall call){
 
-    if(dialog == null){
-      dialog = new AlertDialog.Builder(context);
-    }
+  public static void show(final Context context, String title, String message, final OnPositiveCall call){
 
+
+    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
     dialog.setTitle(title);
     dialog.setIcon(android.R.drawable.ic_dialog_alert);
     dialog.setMessage(message);
@@ -61,36 +57,45 @@ public class DialogUtils {
 
   }
 
-  public  void showMDDialog(Context context, String title, String message, final OnPositiveCall call){
-    if(builder == null){
-      builder = new MaterialDialog.Builder(context);
-    }
+  public  static void showMDDialog(Context context, String title, String message, final OnResponseCallBack call){
 
-    if(dialog1 != null && dialog1.isShowing()){
-      dialog1.setContent(message);
-    }else{
-      builder.title(title)
+    MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
+
+    builder.title(title)
+            .iconRes(android.R.drawable.ic_dialog_alert)
               .content(message)
-              .positiveText("停止")
+              .positiveText("确定")
               .negativeText("取消")
               .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
 
                   if(call != null){
-                    call.goOn();
-
+                    call.onPositiveClick();
                   }
                 }
-              });
-      dialog1 = builder.build();
-      dialog1.setCancelable(false);
-      dialog1.show();
-    }
+              })
+            .onNegative(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                if(call != null){
+                  call.onNegativeClick();
+                }
+              }
+            });
+    MaterialDialog dialog1 = builder.build();
+    dialog1.setCancelable(false);
+    dialog1.show();
 
   }
 
   public interface OnPositiveCall{
     void goOn();
+  }
+
+
+  public interface OnResponseCallBack{
+    void onPositiveClick();
+    void onNegativeClick();
   }
 }

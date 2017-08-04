@@ -141,7 +141,7 @@ public class AssetDetailActivity extends BaseActivity {
       setresult(mAssetDetail);
       isExist = true;
     }else{
-      if(tag.equals("InventoryAssetsFragment") || tag.equals("OutboundFragment")){
+      if(tag.equals("InventoryAssetsFragment") ){
         dialog.showInfoWithStatus("没有记录过此资产");
       }
 
@@ -258,12 +258,14 @@ public class AssetDetailActivity extends BaseActivity {
 
   private void initView() {
 
-    if(tag.equals("StorageFragment")){
+    if(tag.equals("enter")){
       initToolbar(mToolbar, "资产入库", true);
-    }else if(tag.equals("OutboundFragment")){
+    }else if(tag.equals("out")){
       initToolbar(mToolbar, "资产出库", true);
     }else if(tag.equals("InventoryAssetsFragment")){
       initToolbar(mToolbar, "资产校验", true);
+    }else if(tag.equals("BatchScanActivity")){
+      initToolbar(mToolbar, "批量统计", true);
     }
 
   }
@@ -305,9 +307,9 @@ public class AssetDetailActivity extends BaseActivity {
     }
 
 
-    if (tag.equals("OutboundFragment")) {
+    if (tag.equals("out")) {
       inputAssetDetail.setExist("出库");
-    } else if (tag.equals("StorageFragment")) {
+    } else if (tag.equals("enter")) {
       inputAssetDetail.setExist("入库");
     }else if(tag.equals("InventoryAssetsFragment")){
       inputAssetDetail.setExist(mAssetDetail.getExist());
@@ -329,11 +331,11 @@ public class AssetDetailActivity extends BaseActivity {
     switch (view.getId()) {
       case R.id.btn_save:
         String message = "";
-        if(tag.equals("StorageFragment")){
+        if(tag.equals("enter")){
           message = "确定入库？";
-        }else if(tag.equals("OutboundFragment")){
+        }else if(tag.equals("out")){
           message = "确定出库？";
-        }else if(tag.equals("InventoryAssetsFragment")){
+        }else if(tag.equals("InventoryAssetsFragment")||tag.equals("BatchScanActivity")){
           message = "确定修改？";
         }
 

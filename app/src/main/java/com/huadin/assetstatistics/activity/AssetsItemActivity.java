@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -13,10 +14,12 @@ import android.widget.Spinner;
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.bigkoo.svprogresshud.listener.OnDismissListener;
 import com.huadin.assetstatistics.R;
+import com.huadin.assetstatistics.adapter.BaseAdapter;
 import com.huadin.assetstatistics.adapter.OutAssetsAdapter;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.widget.MyDecoration;
+import com.huadin.assetstatistics.widget.dragItem.SimpleItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +27,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.R.attr.tag;
 import static android.R.id.list;
 
 /**
  * Created by admin on 2017/7/19.
  */
 
-public class AssetsItemActivity extends BaseActivity {
+public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnItemClickListener {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.recyclerview)
@@ -58,6 +62,7 @@ public class AssetsItemActivity extends BaseActivity {
     }
 
   private void initListener() {
+    mAdapter.setOnItemClickListener(this);
     dialog.setOnDismissListener(new OnDismissListener() {
       @Override
       public void onDismiss(SVProgressHUD hud) {
@@ -106,6 +111,13 @@ public class AssetsItemActivity extends BaseActivity {
         mAdapter = new OutAssetsAdapter(this,assetDetails);
         mRecyclerview.addItemDecoration(new MyDecoration(this, MyDecoration.VERTICAL_LIST));
         mRecyclerview.setAdapter(mAdapter);
+
+      //先实例化Callback
+      ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
+      //用Callback构造ItemtouchHelper
+      ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+      //调用ItemTouchHelper的attachToRecyclerView方法建立联系
+      touchHelper.attachToRecyclerView(mRecyclerview);
     }
 
     private void initData(int categoryId) {
@@ -116,10 +128,10 @@ public class AssetsItemActivity extends BaseActivity {
           list = DbUtils.queryByName(AssetDetail.class, assetName);
           break;
         case 1://出库
-          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"no");
+          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"出库");
           break;
         case 2://入库
-          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"yes");
+          list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"入库");
           break;
       }
 
@@ -144,4 +156,11 @@ public class AssetsItemActivity extends BaseActivity {
         }
     }
 
+  @Override
+  public void onItemClick(int position) {
+    Intent intent = new Intent(this, AssetDetailActivity.class);
+    intent.putExtra("tag","InventoryAssetsFragment");
+    intent.putExtra("result",assetDetails.get(position).getBarcode());
+    startActivity(intent);
+  }
 }

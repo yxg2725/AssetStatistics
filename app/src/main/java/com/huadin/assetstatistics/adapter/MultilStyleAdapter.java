@@ -1,5 +1,6 @@
 package com.huadin.assetstatistics.adapter;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -12,26 +13,29 @@ import android.widget.TextView;
 
 import com.flyco.labelview.LabelView;
 import com.huadin.assetstatistics.R;
-import com.huadin.assetstatistics.activity.PatchScanActivity;
+import com.huadin.assetstatistics.activity.BatchScanActivity;
+import com.huadin.assetstatistics.activity.ImageActivity;
 import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
+import com.huadin.assetstatistics.utils.DbUtils;
+import com.huadin.assetstatistics.utils.DialogUtils;
+import com.huadin.assetstatistics.widget.dragItem.ItemTouchHelperAdapter;
 
 import java.util.ArrayList;
-
-import static android.graphics.Typeface.NORMAL;
+import java.util.Collections;
 
 /**
  * Created by 华电 on 2017/8/3.
  */
 
-public class MultilStyleAdapter extends RecyclerView.Adapter {
+public class MultilStyleAdapter extends RecyclerView.Adapter  {
   private static final int NORECORD = 0;
   private static final int NORMAL = 1;
-  private final PatchScanActivity patchScanActivity;
+  private final BatchScanActivity context;
   private final ArrayList<Object> list;
 
-  public MultilStyleAdapter(PatchScanActivity patchScanActivity, ArrayList<Object> list) {
-    this.patchScanActivity = patchScanActivity;
+  public MultilStyleAdapter(BatchScanActivity context, ArrayList<Object> list) {
+    this.context = context;
     this.list = list;
   }
 
@@ -48,7 +52,7 @@ public class MultilStyleAdapter extends RecyclerView.Adapter {
   public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
     if(viewType == NORECORD){
-      View view0 = LayoutInflater.from(parent.getContext()).inflate(R.layout.no_record_item,null);
+      View view0 = LayoutInflater.from(parent.getContext()).inflate(R.layout.no_record_item,parent,false);
 
       return new NoRecordHolder(view0);
     }else{
@@ -59,7 +63,7 @@ public class MultilStyleAdapter extends RecyclerView.Adapter {
   }
 
   @Override
-  public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+  public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
     Object object = list.get(position);
     int itemViewType = getItemViewType(position);
 
@@ -68,8 +72,8 @@ public class MultilStyleAdapter extends RecyclerView.Adapter {
       String code = (String)object;
       holder0.tvCode.setText(code);
     }else{
-      NormalHolder holder1 = (NormalHolder) holder;
-      AssetDetail asset = (AssetDetail)object;
+      final NormalHolder holder1 = (NormalHolder) holder;
+      final AssetDetail asset = (AssetDetail)object;
 
       MyApplication.showImageView(asset.getImgPath(),holder1.iv);//图片
       holder1.deveiceName.setText(asset.getAssetName());//设备名称
@@ -86,7 +90,65 @@ public class MultilStyleAdapter extends RecyclerView.Adapter {
       holder1.labelView.setGravity(Gravity.TOP|Gravity.RIGHT);
       holder1.labelView.setBgColor (Color.parseColor("#3F9FE0"));
       holder1.labelView.setFillTriangle(true);
+
+      holder1.iv.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          if(holder1.iv.getDrawable() != null){
+            Intent intent = new Intent(context, ImageActivity.class);
+            intent.putExtra("imgPath", asset.getImgPath());
+            context.startActivity(intent);
+          }
+        }
+      });
+
+      holder1.ivDown.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          if(holder1.llBottom.getVisibility() == View.GONE){
+            holder1.llBottom.setVisibility(View.VISIBLE);
+            MyApplication.showImageView(R.drawable.arrow_up,holder1.ivDown);
+          }else{
+            holder1.llBottom.setVisibility(View.GONE);
+            MyApplication.showImageView(R.drawable.arrow_down,holder1.ivDown);
+          }
+        }
+      });
     }
+
+    holder.itemView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if(listener != null){
+          listener.onItemClick(holder.getLayoutPosition());
+        }
+      }
+    });
+
+    holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View v) {
+        DialogUtils.showMDDialog(context, "提示", "是否删除此数据", new DialogUtils.OnResponseCallBack() {
+          @Override
+          public void onPositiveClick() {
+            //删除数据库
+            if (list.get(holder.getLayoutPosition()) instanceof AssetDetail){
+              DbUtils.delete(list.get(holder.getLayoutPosition()));
+            }
+
+            list.remove(holder.getLayoutPosition());
+            notifyItemRemoved(holder.getLayoutPosition());
+
+          }
+
+          @Override
+          public void onNegativeClick() {
+            notifyDataSetChanged();
+          }
+        });
+        return true;
+      }
+    });
   }
 
   @Override
@@ -140,4 +202,14 @@ public class MultilStyleAdapter extends RecyclerView.Adapter {
 
     }
   }
+
+  public OnItemClickListener listener;
+  public interface OnItemClickListener{
+    void onItemClick(int position);
+  }
+
+  public void setOnItemClickListener(OnItemClickListener listener){
+    this.listener = listener;
+  }
+
 }

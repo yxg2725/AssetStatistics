@@ -48,6 +48,7 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     TextView checkDate = (TextView) itemView.findViewById(R.id.check_date);
     TextView nextCheckDate = (TextView) itemView.findViewById(R.id.next_check_date);
     TextView checkPeople = (TextView) itemView.findViewById(R.id.check_people);
+
     final ImageView iv = (ImageView) itemView.findViewById(R.id.iv);
     final ImageView ivDown = (ImageView) itemView.findViewById(R.id.iv_down);
     final LinearLayout llBottom = (LinearLayout) itemView.findViewById(R.id.ll_bottom);

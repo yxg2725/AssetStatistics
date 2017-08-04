@@ -33,7 +33,7 @@
         </activity>
         <activity android:name=".activity.AboutActivity">
         </activity>
-        <activity android:name=".activity.PatchScanActivity">
+        <activity android:name=".activity.BatchScanActivity">
         </activity>
     </application>
 

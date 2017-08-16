@@ -61,6 +61,9 @@ public class RFIDUtils {
   private String stringTag;
   private final SVProgressHUD dialog;
   private  static Context context;
+
+
+
   //单例
   public static RFIDUtils getInstance(Context context){
     RFIDUtils.context = context;
@@ -89,7 +92,7 @@ public class RFIDUtils {
   //连接
   public  boolean connect() {
 
-    //RfidPower.PDATYPE PT = RfidPower.PDATYPE.valueOf(4);
+    //RfidPower.PDATYPE PT = RfidPower.PDATYPE.IDATA;
     RfidPower.PDATYPE PT=RfidPower.PDATYPE.ALPS_KT45Q;
     mRpower = new RfidPower(PT);
 
@@ -303,6 +306,9 @@ public void readAsync(String tag){
         out=new char[rdata.length*2];
         mReader.Hex2Str(rdata, rdata.length, out);
         val=String.valueOf(out);
+        /*if(!val.matches("\\d+")){
+          return;
+        }*/
         soundPool.play(1, 1, 1, 0, 0, 1);
         Toast.makeText(MyApplication.getContext(), "成功:"+val,
                 Toast.LENGTH_SHORT).show();
@@ -329,6 +335,7 @@ public void readAsync(String tag){
     }
 
     if(MyApplication.connectSuccess){
+      hashSet.clear();
       mHandler.postDelayed(runnable_MainActivity,0);
     }
   }

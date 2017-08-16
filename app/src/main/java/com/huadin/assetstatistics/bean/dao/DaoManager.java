@@ -103,4 +103,8 @@ public class DaoManager {
     }
   }
 
+  public SQLiteDatabase getDb(){
+    return mHelper.getWritableDatabase();
+  }
+
 }

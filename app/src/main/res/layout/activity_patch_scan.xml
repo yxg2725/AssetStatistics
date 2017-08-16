@@ -5,70 +5,97 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        app:popupTheme="@style/OverflowMenuStyle"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:layout_height="?attr/actionBarSize">
-    </android.support.v7.widget.Toolbar>
-
-<LinearLayout
-    android:layout_marginTop="?attr/actionBarSize"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:textSize="18sp"
-        android:padding="10dp"
-        android:id="@+id/tv_result"
-        android:text="扫描结果"
-        android:background="@android:color/white"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include layout="@layout/toolbar_layout"/>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:layout_above="@+id/fl_bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_out"
-            android:text="出库"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/btn_enter"
-            android:text="入库"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="扫描结果"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"/>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
-
-
-</LinearLayout>
-
-
-
-
+<FrameLayout
+    android:id="@+id/fl_bottom"
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <Button
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
         android:id="@+id/btn_stop"
-        android:text="停止扫描"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/btn_scan_bg"
+        android:text="停止扫描"/>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/tv_select_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="全选"/>
+
+        <Button
+            android:id="@+id/tv_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="删除"/>
+
+        <Button
+            android:id="@+id/tv_select_enter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="入库"/>
+
+        <Button
+            android:id="@+id/tv_select_out"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="出库"/>
+
+    </LinearLayout>
+</FrameLayout>
+
 
 </RelativeLayout>

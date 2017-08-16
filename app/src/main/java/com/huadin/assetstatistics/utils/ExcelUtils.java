@@ -5,6 +5,7 @@ import android.util.Log;
 
 
 import com.huadin.assetstatistics.bean.AssetDetail;
+import com.huadin.assetstatistics.bean.DataInEntity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -124,7 +125,7 @@ public class ExcelUtils {
 
     public static boolean writeObjListToExcel(
             ArrayList<ArrayList<ArrayList<String>>> cursorDatas,//数据
-            String fileName, Context c) {
+            String fileName) {
         if (cursorDatas != null && cursorDatas.size() > 0) {
             WritableWorkbook writebook = null;
             InputStream in = null;
@@ -180,23 +181,23 @@ public class ExcelUtils {
         return true;
     }
 
-   /* public static List<DataInEntity> read2DB(File f, Context con) {
-        List<DataInEntity> mList = new ArrayList<>();
+    public static List<DataInEntity> read2DB(File f, Context con) {
+        List<DataInEntity> mList = new ArrayList<>();//sheet集合
         try {
             Workbook course = Workbook.getWorkbook(f);
-            for(int a = 0; a < course.getNumberOfSheets(); a++) {
+            for(int a = 0; a < course.getNumberOfSheets(); a++) {//sheet个数
 
-                ArrayList<ArrayList<String>> sheetList = new ArrayList<>();
+                ArrayList<ArrayList<String>> sheetList = new ArrayList<>();//sheet里的数据
                 // 循环多个Sheet
                 Sheet sheet = course.getSheet(a);
                 String name = course.getSheet(a).getName();
                 Cell cell = null;
                 for (int i = 2; i < sheet.getRows(); i++) {
-                    // 第三行开始
+                    //从第三行开始读取 前两行为表头和标题
                     ArrayList<String> rowList = new ArrayList<>();
-                    for(int j = 0; j < sheet.getColumns(); j++) {
+                    for(int j = 0; j < sheet.getColumns(); j++) {//列
                         // 第一列开始
-                        cell = sheet.getCell(j, i);
+                        cell = sheet.getCell(j, i);// 列、行
 
                         rowList.add(cell.getContents());
                     }
@@ -209,7 +210,7 @@ public class ExcelUtils {
             e.printStackTrace();
         }
         return mList;
-    }*/
+    }
 
 
 }

@@ -61,6 +61,19 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
+        <View
+            android:background="@android:color/background_dark"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/tv_not_good"
+            android:gravity="center"
+            android:text="不合格"
+            android:textSize="@dimen/text_size2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

@@ -17,9 +17,15 @@ public class AssetDetail  implements Comparable<AssetDetail>{
     private String barcode;//条码号
     private String assetName;//设备名称
     private String enterTime;//入库时间
+    private String outTime;//出库时间
+    private String backTime;//回库时间
     private String people;//检验人
     private String deviceId;//规格型号
-    private String usedCompany;//规格型号
+    private String usedCompany;//使用单位
+    private String usedDepartment;//使用部门
+    private String custodian;//保管人
+    private String datePurchase;//购置日期
+
     private String manufacturer;//生产厂家
     private String dateOfProduction;//生产日期
     private String inspectionNumber;//检测编号
@@ -28,22 +34,30 @@ public class AssetDetail  implements Comparable<AssetDetail>{
     private String nextCheckDate;//下次检测日期
     private String checkPeople;//检验员
     private String exist;//存在   出入库标志
+    private String isGood;//   是否合格
     private String imgPath;//图片路径
 
 
-    @Generated(hash = 357989332)
+    @Generated(hash = 862705825)
     public AssetDetail(Long id, String barcode, String assetName, String enterTime,
-            String people, String deviceId, String usedCompany,
-            String manufacturer, String dateOfProduction, String inspectionNumber,
-            String archivesNumber, String checkDate, String nextCheckDate,
-            String checkPeople, String exist, String imgPath) {
+            String outTime, String backTime, String people, String deviceId,
+            String usedCompany, String usedDepartment, String custodian,
+            String datePurchase, String manufacturer, String dateOfProduction,
+            String inspectionNumber, String archivesNumber, String checkDate,
+            String nextCheckDate, String checkPeople, String exist, String isGood,
+            String imgPath) {
         this.id = id;
         this.barcode = barcode;
         this.assetName = assetName;
         this.enterTime = enterTime;
+        this.outTime = outTime;
+        this.backTime = backTime;
         this.people = people;
         this.deviceId = deviceId;
         this.usedCompany = usedCompany;
+        this.usedDepartment = usedDepartment;
+        this.custodian = custodian;
+        this.datePurchase = datePurchase;
         this.manufacturer = manufacturer;
         this.dateOfProduction = dateOfProduction;
         this.inspectionNumber = inspectionNumber;
@@ -52,6 +66,7 @@ public class AssetDetail  implements Comparable<AssetDetail>{
         this.nextCheckDate = nextCheckDate;
         this.checkPeople = checkPeople;
         this.exist = exist;
+        this.isGood = isGood;
         this.imgPath = imgPath;
     }
 
@@ -229,6 +244,66 @@ public class AssetDetail  implements Comparable<AssetDetail>{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public String getIsGood() {
+        return this.isGood;
+    }
+
+
+    public void setIsGood(String isGood) {
+        this.isGood = isGood;
+    }
+
+
+    public String getDatePurchase() {
+        return this.datePurchase;
+    }
+
+
+    public void setDatePurchase(String datePurchase) {
+        this.datePurchase = datePurchase;
+    }
+
+
+    public String getCustodian() {
+        return this.custodian;
+    }
+
+
+    public void setCustodian(String custodian) {
+        this.custodian = custodian;
+    }
+
+
+    public String getUsedDepartment() {
+        return this.usedDepartment;
+    }
+
+
+    public void setUsedDepartment(String usedDepartment) {
+        this.usedDepartment = usedDepartment;
+    }
+
+
+    public String getBackTime() {
+        return this.backTime;
+    }
+
+
+    public void setBackTime(String backTime) {
+        this.backTime = backTime;
+    }
+
+
+    public String getOutTime() {
+        return this.outTime;
+    }
+
+
+    public void setOutTime(String outTime) {
+        this.outTime = outTime;
     }
 
 

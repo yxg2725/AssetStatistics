@@ -3,6 +3,7 @@ package com.huadin.assetstatistics.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -49,6 +50,10 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     TextView nextCheckDate = (TextView) itemView.findViewById(R.id.next_check_date);
     TextView checkPeople = (TextView) itemView.findViewById(R.id.check_people);
 
+    TextView department = (TextView) itemView.findViewById(R.id.used_department);
+    TextView custodian = (TextView) itemView.findViewById(R.id.custodian);
+    TextView datePurchase = (TextView) itemView.findViewById(R.id.date_purchase);
+
     final ImageView iv = (ImageView) itemView.findViewById(R.id.iv);
     final ImageView ivDown = (ImageView) itemView.findViewById(R.id.iv_down);
     final LinearLayout llBottom = (LinearLayout) itemView.findViewById(R.id.ll_bottom);
@@ -65,10 +70,20 @@ public class OutAssetsAdapter extends BaseAdapter<AssetDetail> {
     checkDate.setText(assetDetail.getCheckDate());//检验日期
     nextCheckDate.setText(assetDetail.getNextCheckDate());//下次校验日期
     checkPeople.setText(assetDetail.getCheckPeople());//校验员
-    labelView.setText("合格");
+
+    department.setText(assetDetail.getUsedDepartment());//使用部门
+    custodian.setText(assetDetail.getCustodian());//保管人
+    datePurchase.setText(assetDetail.getDatePurchase());//购置日期
+
     labelView.setGravity(Gravity.TOP|Gravity.RIGHT);
-    labelView.setBgColor (Color.parseColor("#3F9FE0"));
     labelView.setFillTriangle(true);
+    if(TextUtils.equals(assetDetail.getIsGood(),"不合格")){
+      labelView.setText("不合格");
+      labelView.setBgColor (Color.parseColor("#FFCC3232"));
+    }else{
+      labelView.setText("合格");
+      labelView.setBgColor (Color.parseColor("#3F9FE0"));
+    }
 
 
 

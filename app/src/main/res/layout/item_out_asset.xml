@@ -27,6 +27,11 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
+                    <CheckBox
+                        android:id="@+id/checkbox"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/iv"
                         android:layout_width="100dp"
@@ -60,7 +65,7 @@
                                 android:id="@+id/device_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="验电笔"/>
+                                android:text=""/>
                         </LinearLayout>
                         <!--规格型号-->
                         <LinearLayout
@@ -80,7 +85,28 @@
                                 android:id="@+id/device_id"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="YDQ HD-001"/>
+                                android:text=""/>
+                        </LinearLayout>
+                        <!-- 档案编号-->
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="3dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="档案编号："/>
+
+                            <TextView
+                                android:id="@+id/archives_number"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
                         </LinearLayout>
                         <!--使用单位-->
                         <LinearLayout
@@ -100,10 +126,9 @@
                                 android:id="@+id/used_company"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="YDQ HD-001"/>
+                                android:text=""/>
                         </LinearLayout>
-                        <!--生产厂家-->
-
+                        <!--使用部门-->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -115,16 +140,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="生产厂家："/>
+                                android:text="使用部门："/>
 
                             <TextView
-                                android:id="@+id/manufacturer"
+                                android:id="@+id/used_department"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="YDQ HD-001"/>
+                                android:text=""/>
                         </LinearLayout>
-                        <!--出厂日期-->
-
+                        <!--保管人-->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -136,14 +160,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="出厂日期："/>
+                                android:text="保管人："/>
 
                             <TextView
-                                android:id="@+id/date_of_production"
+                                android:id="@+id/custodian"
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="YDQ HD-001"/>
+                                android:layout_height="wrap_content"
+                                android:text=""/>
 
                             <ImageView
                                 android:id="@+id/iv_down"
@@ -153,25 +177,91 @@
                                 android:src="@drawable/arrow_down"/>
                         </LinearLayout>
 
+
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"/>
                     </LinearLayout>
                 </LinearLayout>
 
-
+            <!--隐藏的部分-->
                 <LinearLayout
                     android:id="@+id/ll_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    >
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@android:color/darker_gray"/>
+                    <!--生产厂家-->
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="生产厂家："/>
+
+                        <TextView
+                            android:id="@+id/manufacturer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+                    <!--购置日期-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="购置日期："/>
+
+                        <TextView
+                            android:id="@+id/date_purchase"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+                    <!--出厂日期-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="出厂日期："/>
+
+                        <TextView
+                            android:id="@+id/date_of_production"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=""/>
+
+
+                    </LinearLayout>
                     <!--检验编号-->
 
                     <LinearLayout
@@ -191,30 +281,10 @@
                             android:id="@+id/inspection_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="YDQ HD-001"/>
+                            android:text=""/>
                     </LinearLayout>
 
-                    <!-- 档案编号-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="3dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="档案编号："/>
-
-                        <TextView
-                            android:id="@+id/archives_number"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="YDQ HD-001"/>
-                    </LinearLayout>
                     <!--检验日期-->
 
                     <LinearLayout
@@ -235,7 +305,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="YDQ HD-001"/>
+                            android:text=""/>
 
                     </LinearLayout>
                     <!--生产厂家-->
@@ -258,7 +328,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="YDQ HD-001"/>
+                            android:text=""/>
 
                     </LinearLayout>
                     <!--校验员-->
@@ -280,7 +350,7 @@
                             android:id="@+id/check_people"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="YDQ HD-001"/>
+                            android:text=""/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -291,8 +361,8 @@
 
         <com.flyco.labelview.LabelView
             android:id="@+id/labelView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="right"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"/>

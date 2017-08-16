@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,6 +39,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter implements Ite
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = View.inflate(parent.getContext(),getItemLayoutId(),null);
+       // View view = LayoutInflater.from(context).inflate(getItemLayoutId(),parent,false);
         return new MyHolder(view);
     }
 

@@ -1,15 +1,18 @@
 package com.huadin.assetstatistics.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,16 +23,21 @@ import android.widget.Toast;
 
 import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
+import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.fragment.InventoryAssetsFragment;
 import com.huadin.assetstatistics.fragment.OutAndEnterFragment;
 import com.huadin.assetstatistics.fragment.SettingFragment;
 import com.huadin.assetstatistics.utils.Contants;
+import com.huadin.assetstatistics.utils.DataOutOrInUtils;
 import com.huadin.assetstatistics.utils.DbUtils;
 import com.huadin.assetstatistics.utils.ExcelUtils;
+import com.huadin.assetstatistics.utils.KT50_B2.ModuleManager;
+import com.huadin.assetstatistics.utils.KT50_B2.RFIDUtils2;
 import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.SharedPreferenceUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
+import com.huadin.assetstatistics.widget.MyFab;
 import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
@@ -40,6 +48,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class MainActivity extends BaseActivity {
@@ -50,6 +59,8 @@ public class MainActivity extends BaseActivity {
   FrameLayout mFlContainer;
   @BindView(R.id.radio_group)
   RadioGroup mRadioGroup;
+  @BindView(R.id.btn_scan)
+  MyFab btnScan;
   private InventoryAssetsFragment mInventoryAssetsFragment;
   private OutAndEnterFragment mOutboundFragment;
   private OutAndEnterFragment mOutAndEnterFragment;
@@ -64,7 +75,11 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
-    RFIDUtils.getInstance(this).connectAsync();//连接RFID
+//    RFIDUtils.getInstance(this).connectAsync();//连接RFID KT45Q 和IDATA
+    if(!MyApplication.connectSuccess){
+      RFIDUtils2.getInstance(this).connect();//KT50_B2
+    }
+
 
     //权限申请
     AndPermission.with(this)
@@ -97,7 +112,7 @@ public class MainActivity extends BaseActivity {
               mInventoryAssetsFragment = new InventoryAssetsFragment();
             }
             setFragmentShow(mInventoryAssetsFragment);
-            changeUi(group,0);
+            changeUi(group, 0);
             break;
           case R.id.rb_outbound:
             //切换出库统计fragment
@@ -105,11 +120,11 @@ public class MainActivity extends BaseActivity {
               mOutboundFragment = new OutAndEnterFragment();
             }
             Bundle bundle = new Bundle();
-            bundle.putString("tag","out");
+            bundle.putString("tag", "out");
             mOutboundFragment.setArguments(bundle);
 
             setFragmentShow(mOutboundFragment);
-            changeUi(group,1);
+            changeUi(group, 1);
             break;
           case R.id.rb_storage:
             //切换入库统计fragment
@@ -118,18 +133,10 @@ public class MainActivity extends BaseActivity {
             }
 
             Bundle bundle2 = new Bundle();
-            bundle2.putString("tag","enter");
+            bundle2.putString("tag", "enter");
             mOutAndEnterFragment.setArguments(bundle2);
             setFragmentShow(mOutAndEnterFragment);
-            changeUi(group,2);
-            break;
-          case R.id.rb_setting:
-            /*//切换设置fragment
-            if (mSettingFragment == null) {
-              mSettingFragment = new SettingFragment();
-            }
-            setFragmentShow(mSettingFragment,"");
-            changeUi(group,3);*/
+            changeUi(group, 2);
             break;
         }
       }
@@ -141,9 +148,9 @@ public class MainActivity extends BaseActivity {
 
     for (int i = 0; i < group.getChildCount(); i++) {
       RadioButton button = (RadioButton) group.getChildAt(i);
-      if(i == id){
+      if (i == id) {
         button.setTextColor(Color.WHITE);
-      }else{
+      } else {
         button.setTextColor(Color.BLACK);
       }
     }
@@ -158,9 +165,6 @@ public class MainActivity extends BaseActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.inventory_menu, menu);
-    MenuItem item = menu.getItem(0);
-    boolean aBoolean = sharedPreferenceUtils.getBoolean(Contants.PATCH_SCAN, false);
-    item.setChecked(aBoolean);
     return true;
 
   }
@@ -168,117 +172,40 @@ public class MainActivity extends BaseActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-      case R.id.menu_scan_patch:
-        item.setChecked(item.isChecked() ? false:true);
-        Log.i("check", "item.isChecked(): " + item.isChecked());
-        if(item.isChecked()){
-          sharedPreferenceUtils.putBoolean(Contants.PATCH_SCAN,true);
-        }else{
-          sharedPreferenceUtils.putBoolean(Contants.PATCH_SCAN,false);
-        }
-        break;
       case R.id.menu_import:
-        ToastUtils.show(mToolbar, "数据导入");
+        //跳转到导入界面
+        Intent intent1 = new Intent(this,DataInActivity.class);
+        startActivity(intent1);
         break;
       case R.id.menu_about:
-        Intent intent = new Intent(this,AboutActivity.class);
+        Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
         break;
       case R.id.menu_export:
-        dialog.showWithStatus("导出中...");
-        //导出的文件名
-        String dirFileName = getDirFileName();
-
-        //表格的sheet名
-        List<String> sheetNames = Arrays.asList(Contants.SHEETNAMES);
-
-        //表头
-        String[] tablehead = Contants.TABLEHEAD;
-        List<String> tableHeads = Arrays.asList(tablehead);
-
-        //表格的标题
-        List<String[]> titles = new ArrayList<>();
-        titles.add(Contants.TABLETITLE_DETAILE);
-        titles.add(Contants.TABLETITLE_TOTAL);
-
-        ExcelUtils.initExcel(dirFileName, sheetNames, titles, tableHeads);
-
-        //获取数据
-        ArrayList<ArrayList<ArrayList<String>>> contentList = new ArrayList<>();
-
-        //明细sheet的数据
-        ArrayList<ArrayList<String>> detailList = new ArrayList<>();
-        List<AssetDetail> list = DbUtils.queryAll(AssetDetail.class);//明细的数
-        Collections.sort(list);
-
-        for (AssetDetail asset : list) {
-          ArrayList<String> assetList = new ArrayList<>();
-          assetList.add(asset.getAssetName());
-          assetList.add(asset.getDeviceId());
-          assetList.add(asset.getUsedCompany());
-          assetList.add(asset.getManufacturer());
-          assetList.add(asset.getDateOfProduction());
-          assetList.add(asset.getInspectionNumber());
-          assetList.add(asset.getArchivesNumber());
-          assetList.add(asset.getCheckDate());
-          assetList.add(asset.getNextCheckDate());
-          assetList.add(asset.getCheckPeople());
-          assetList.add(asset.getExist());
-
-          detailList.add(assetList);
-        }
-
-        //总体sheet的数据
-        ArrayList<ArrayList<String>> totalList = new ArrayList<>();
-
-        for (int i = 0; i < Contants.assetsType.length; i++) {
-          ArrayList<String> List3 = new ArrayList<>();
-
-          List3.add(Contants.assetsType[i]);
-          //总个数查询
-          List<AssetDetail> list1 = DbUtils.queryByName(AssetDetail.class, Contants.assetsType[i]);
-          List3.add(list1.size() + "");
-
-          //库存个数查询
-          List<AssetDetail> existList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "入库");
-          List3.add(existList.size() + "");
-
-          //出库个数查询
-          List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "出库");
-          List3.add(outList.size() + "");
-
-          totalList.add(List3);
-        }
-
-        contentList.add(detailList);
-        contentList.add(totalList);
-
-        boolean issuccess = ExcelUtils.writeObjListToExcel(contentList, dirFileName, this);
-
-        if (issuccess) {
-          dialog.showSuccessWithStatus("导出成功");
-        } else {
-          dialog.showErrorWithStatus("导出失败");
-        }
+        dataOut();
         break;
     }
     return super.onOptionsItemSelected(item);
   }
 
-  private String getDirFileName() {
-    //获取文件名
-    File file = new File(Environment.getExternalStorageDirectory(), "安全工器具");
-    if (!file.exists()) {
-      file.mkdir();
+  /**
+   * 导出
+   */
+  private void dataOut() {
+    dialog.showWithStatus("导出中...");
+    boolean issuccess = DataOutOrInUtils.dataOut();
+    if (issuccess) {
+      dialog.showSuccessWithStatus("导出成功");
+    } else {
+      dialog.showErrorWithStatus("导出失败");
     }
-
-    return file.getAbsolutePath() + "/" + Contants.TABLENAME;
   }
+
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (RFIDUtils.getInstance(this).mHandler != null) {
+    /*if (RFIDUtils.getInstance(this).mHandler != null) {
       RFIDUtils.getInstance(this).mHandler.removeCallbacksAndMessages(null);
     }
 
@@ -286,7 +213,11 @@ public class MainActivity extends BaseActivity {
       RFIDUtils.getInstance(this).mReader.CloseReader();
       RFIDUtils.getInstance(this).mRpower.PowerDown();
     }
+*/
 
+    MyApplication.getLinkage().CancelOperation();
+    ModuleManager.destroyLibSO();
+    MyApplication.connectSuccess = false;
   }
 
   @Override
@@ -302,6 +233,20 @@ public class MainActivity extends BaseActivity {
       return true;
     }
     return super.onKeyDown(keyCode, event);
+  }
+
+
+  @OnClick(R.id.btn_scan)
+  public void onViewClicked() {
+    if(!MyApplication.connectSuccess){
+      //RFIDUtils.getInstance(activity).connectAsync();
+      RFIDUtils2.getInstance(this).connect();
+    }else{
+      //批量扫描
+      Intent intent = new Intent(this, BatchScanActivity.class);
+      startActivity(intent);
+    }
+
   }
 
 

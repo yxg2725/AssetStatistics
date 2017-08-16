@@ -3,28 +3,22 @@ package com.huadin.assetstatistics.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.AssetsItemActivity;
 import com.huadin.assetstatistics.activity.MainActivity;
-import com.huadin.assetstatistics.adapter.BaseAdapter;
 import com.huadin.assetstatistics.adapter.MyAdapter;
-import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.bean.AssetsStyle;
 import com.huadin.assetstatistics.event.Event;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DbUtils;
-import com.huadin.assetstatistics.utils.RFIDUtils;
-import com.huadin.assetstatistics.widget.MyFab;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,7 +28,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -48,8 +41,6 @@ public class InventoryAssetsFragment extends BaseFragment {
   RecyclerView mRecyclerview;
   @BindView(R.id.ll_table_title)
   LinearLayout mLlTableTitle;
-  @BindView(R.id.btn_check)
-  MyFab btnCheck;
   Unbinder unbinder;
   private MyAdapter mAdapter;
   private ArrayList<AssetsStyle> assets;
@@ -110,6 +101,10 @@ public class InventoryAssetsFragment extends BaseFragment {
       List<AssetDetail> outList = DbUtils.queryByStyleAndExist(AssetDetail.class, Contants.assetsType[i], "出库");
       asset.setOutNum(outList.size());
 
+      //不合格个数查询
+      List<AssetDetail> notGoodList = DbUtils.queryByStyleAndIsGood(AssetDetail.class, Contants.assetsType[i]);
+      asset.setNotGood(notGoodList.size());
+
       assets.add(asset);
     }
 
@@ -133,6 +128,8 @@ public class InventoryAssetsFragment extends BaseFragment {
         Intent intent = new Intent(mActivity, AssetsItemActivity.class);
         intent.putExtra("assetName", asset.getAsssetStyle());
         mActivity.startActivity(intent);
+        mActivity.overridePendingTransition(R.anim.right_in, R.anim.leftout);
+
       }
     });
   }
@@ -143,16 +140,4 @@ public class InventoryAssetsFragment extends BaseFragment {
     unbinder.unbind();
   }
 
-  @OnClick(R.id.btn_check)
-  public void onViewClicked() {
-    final MainActivity activity = (MainActivity) mActivity;
-    if(!MyApplication.connectSuccess){
-      RFIDUtils.getInstance(activity).connectAsync();
-    }
-    if(!MyApplication.connectSuccess){
-      return;
-    }
-
-    RFIDUtils.getInstance(activity).readAsync("InventoryAssetsFragment");
-  }
 }

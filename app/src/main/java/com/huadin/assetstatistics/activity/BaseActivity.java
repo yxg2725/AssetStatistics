@@ -20,12 +20,15 @@ import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.fragment.OutAndEnterFragment;
 import com.huadin.assetstatistics.utils.Contants;
 import com.huadin.assetstatistics.utils.DialogUtils;
+import com.huadin.assetstatistics.utils.KT50_B2.RFIDUtils2;
 import com.huadin.assetstatistics.utils.RFIDUtils;
 import com.huadin.assetstatistics.utils.SharedPreferenceUtils;
 import com.huadin.assetstatistics.utils.ToastUtils;
 
+import static android.R.attr.keycode;
 import static android.R.attr.tag;
 import static android.view.KeyEvent.KEYCODE_F4;
+import static android.view.KeyEvent.KEYCODE_F9;
 
 /**
  * Created by admin on 2017/7/19.
@@ -58,20 +61,20 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if(!(this instanceof MainActivity)){
-            return super.onKeyDown(keyCode, event);
-        }
         Log.i("onKeyDown", "onKeyDown: "+ keyCode);
-        if(keyCode == KeyEvent.KEYCODE_F4){
-            if(!MyApplication.connectSuccess){
-                RFIDUtils.getInstance(this).connectAsync();
-            }
-            if(!MyApplication.connectSuccess){
-                return super.onKeyDown(keyCode, event);
+       // if(keyCode == KeyEvent.KEYCODE_F9 ){//KEYCODE_F4
+        if(keyCode == KeyEvent.KEYCODE_F4 ){
+            if(!MyApplication.connectSuccess ){
+//                RFIDUtils.getInstance(this).connectAsync();
+                RFIDUtils2.getInstance(this).connect();
+            }else{
+                Intent intent = new Intent(this, BatchScanActivity.class);
+                startActivity(intent);
             }
 
-            Fragment fragment = ((MainActivity) this).getSupportFragmentManager().findFragmentById(R.id.fl_container);
+
+
+            /*Fragment fragment = ((MainActivity) this).getSupportFragmentManager().findFragmentById(R.id.fl_container);
             String simpleName = fragment.getClass().getSimpleName();
             if(simpleName.equals("InventoryAssetsFragment")) {
                 RFIDUtils.getInstance(this).readAsync("InventoryAssetsFragment");
@@ -89,9 +92,7 @@ public class BaseActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
 
-            }
-
-
+            }*/
 
 
         }

@@ -32,6 +32,7 @@ public class MyAdapter extends BaseAdapter<AssetsStyle>  {
     TextView tableNum = (TextView) itemView.findViewById(R.id.table_num);//数量
     TextView existNum = (TextView) itemView.findViewById(R.id.tv_exist_num);//库存
     TextView outNum = (TextView) itemView.findViewById(R.id.tv_out_num);//出库
+    TextView notGood = (TextView) itemView.findViewById(R.id.tv_not_good);//不合格
 
     AssetsStyle asset = list.get(postion);
 
@@ -39,6 +40,7 @@ public class MyAdapter extends BaseAdapter<AssetsStyle>  {
     tableNum.setText(asset.getCount() + "");
     existNum.setText(asset.getExistNum()+"");
     outNum.setText(asset.getOutNum()+"");
+    notGood.setText(asset.getNotGood()+"");
 
   }
 

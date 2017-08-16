@@ -2,11 +2,15 @@ package com.huadin.assetstatistics.adapter;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +19,7 @@ import com.flyco.labelview.LabelView;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.BatchScanActivity;
 import com.huadin.assetstatistics.activity.ImageActivity;
+import com.huadin.assetstatistics.activity.MainActivity;
 import com.huadin.assetstatistics.app.MyApplication;
 import com.huadin.assetstatistics.bean.AssetDetail;
 import com.huadin.assetstatistics.utils.DbUtils;
@@ -23,6 +28,7 @@ import com.huadin.assetstatistics.widget.dragItem.ItemTouchHelperAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Created by 华电 on 2017/8/3.
@@ -33,6 +39,8 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
   private static final int NORMAL = 1;
   private final BatchScanActivity context;
   private final ArrayList<Object> list;
+  private NoRecordHolder holder0;
+  private NormalHolder holder1;
 
   public MultilStyleAdapter(BatchScanActivity context, ArrayList<Object> list) {
     this.context = context;
@@ -62,20 +70,30 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
 
   }
 
+  public RecyclerView.ViewHolder getViewHolder( int position){
+    int itemViewType = getItemViewType(position);
+    if(itemViewType == NORECORD){
+      return holder0;
+    }
+    return holder1;
+  }
+
   @Override
   public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
     Object object = list.get(position);
     int itemViewType = getItemViewType(position);
 
     if(itemViewType == NORECORD){
-      NoRecordHolder holder0 = (NoRecordHolder) holder;
+      holder0 = (NoRecordHolder) holder;
       String code = (String)object;
       holder0.tvCode.setText(code);
+      holder0.setItemBackGround(position);
     }else{
-      final NormalHolder holder1 = (NormalHolder) holder;
+      holder1 = (NormalHolder) holder;
+      holder1.setItemBackGround(position);
       final AssetDetail asset = (AssetDetail)object;
 
-      MyApplication.showImageView(asset.getImgPath(),holder1.iv);//图片
+      MyApplication.showImageView(asset.getImgPath(), holder1.iv);//图片
       holder1.deveiceName.setText(asset.getAssetName());//设备名称
       holder1.deveiceId.setText(asset.getDeviceId());//设备型号
       holder1.usedCompany.setText(asset.getUsedCompany());//使用单位
@@ -86,10 +104,22 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
       holder1.checkDate.setText(asset.getCheckDate());//检验日期
       holder1.nextCheckDate.setText(asset.getNextCheckDate());//下次校验日期
       holder1.checkPeople.setText(asset.getCheckPeople());//校验员
-      holder1.labelView.setText("合格");
+
+      holder1.usedDepartment.setText(asset.getUsedDepartment());//使用部门
+      holder1.custodian.setText(asset.getCustodian());//保管人
+      holder1.datePurchase.setText(asset.getDatePurchase());//购置日期
+
       holder1.labelView.setGravity(Gravity.TOP|Gravity.RIGHT);
-      holder1.labelView.setBgColor (Color.parseColor("#3F9FE0"));
+
       holder1.labelView.setFillTriangle(true);
+
+      if(TextUtils.equals(asset.getIsGood(),"不合格")){
+        holder1.labelView.setText("不合格");
+        holder1.labelView.setBgColor (Color.parseColor("#FFCC3232"));
+      }else{
+        holder1.labelView.setText("合格");
+        holder1.labelView.setBgColor (Color.parseColor("#3F9FE0"));
+      }
 
       holder1.iv.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -107,10 +137,10 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
         public void onClick(View v) {
           if(holder1.llBottom.getVisibility() == View.GONE){
             holder1.llBottom.setVisibility(View.VISIBLE);
-            MyApplication.showImageView(R.drawable.arrow_up,holder1.ivDown);
+            MyApplication.showImageView(R.drawable.arrow_up, holder1.ivDown);
           }else{
             holder1.llBottom.setVisibility(View.GONE);
-            MyApplication.showImageView(R.drawable.arrow_down,holder1.ivDown);
+            MyApplication.showImageView(R.drawable.arrow_down, holder1.ivDown);
           }
         }
       });
@@ -128,7 +158,13 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
     holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View v) {
-        DialogUtils.showMDDialog(context, "提示", "是否删除此数据", new DialogUtils.OnResponseCallBack() {
+
+        if(longClikcListener != null){
+          //显示CheckBox
+          longClikcListener.onItemLongClick(position);
+        }
+
+        /*DialogUtils.showMDDialog(context, "提示", "是否删除此数据", new DialogUtils.OnResponseCallBack() {
           @Override
           public void onPositiveClick() {
             //删除数据库
@@ -145,7 +181,7 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
           public void onNegativeClick() {
             notifyDataSetChanged();
           }
-        });
+        });*/
         return true;
       }
     });
@@ -159,9 +195,22 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
   class NoRecordHolder extends RecyclerView.ViewHolder{
 
     public TextView tvCode;
+    public CheckBox checkBox;
     public NoRecordHolder(View itemView) {
       super(itemView);
       tvCode = (TextView) itemView.findViewById(R.id.tv_barcode);
+      checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
+    }
+
+
+    public void setItemBackGround(int position) {
+
+      Set<Integer> positionSet = context.positionSet;
+      if (positionSet.contains(position)) {
+        itemView.setBackgroundColor(Color.BLUE);
+      } else {
+        itemView.setBackgroundColor(Color.WHITE);
+      }
     }
   }
 
@@ -181,6 +230,11 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
     public final ImageView ivDown;
     public final LinearLayout llBottom;
     public final LabelView labelView;
+    public final CheckBox checkBox;
+
+    public final TextView usedDepartment;
+    public final TextView custodian;
+    public final TextView datePurchase;
 
     public NormalHolder(View itemView) {
       super(itemView);
@@ -199,7 +253,21 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
       ivDown = (ImageView) itemView.findViewById(R.id.iv_down);
       llBottom = (LinearLayout) itemView.findViewById(R.id.ll_bottom);
       labelView = (LabelView) itemView.findViewById(R.id.labelView);
+      checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
 
+      usedDepartment = (TextView) itemView.findViewById(R.id.used_department);
+      custodian = (TextView) itemView.findViewById(R.id.custodian);
+      datePurchase = (TextView) itemView.findViewById(R.id.date_purchase);
+
+    }
+
+    public void setItemBackGround(int position) {
+      Set<Integer> positionSet = context.positionSet;
+      if (positionSet.contains(position)) {
+        itemView.setBackgroundColor(Color.BLUE);
+      } else {
+        itemView.setBackgroundColor(Color.WHITE);
+      }
     }
   }
 
@@ -210,6 +278,15 @@ public class MultilStyleAdapter extends RecyclerView.Adapter  {
 
   public void setOnItemClickListener(OnItemClickListener listener){
     this.listener = listener;
+  }
+
+  public OnItemLongClickListener longClikcListener;
+  public interface OnItemLongClickListener{
+    void onItemLongClick(int position);
+  }
+
+  public void setOnItemLongClickListener(OnItemLongClickListener longClikcListener){
+    this.longClikcListener = longClikcListener;
   }
 
 }

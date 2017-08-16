@@ -7,10 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
+import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.huadin.assetstatistics.R;
 import com.huadin.assetstatistics.activity.AssetDetailActivity;
 import com.huadin.assetstatistics.activity.BatchScanActivity;
@@ -45,14 +49,16 @@ import butterknife.Unbinder;
 
 public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnItemClickListener {
 
-  @BindView(R.id.btn_scan)
-  MyFab mBtnScan;
+
   @BindView(R.id.rv)
   RecyclerView mRv;
+  @BindView(R.id.sp_category)
+  Spinner spCategory;
   Unbinder unbinder;
   private ArrayList<AssetDetail> assetDetails = new ArrayList<>();
   private OutAssetsAdapter mAdapter;
   private String tag;
+  private SVProgressHUD dialog;
 
 
   @Nullable
@@ -79,11 +85,33 @@ public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnI
 
   private void initListener() {
     mAdapter.setOnItemClickListener(this);
+
+    spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position){
+          case 0://所有
+            initData(0);
+            break;
+          case 1://自用
+            initData(1);
+            break;
+          case 2://外用
+            initData(2);
+            break;
+
+        }
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+      }
+    });
   }
 
 
   private void initView() {
-
+    dialog = new SVProgressHUD(mActivity);
     if(tag.equals("out")){
       ((MainActivity)mActivity).mToolbar.setTitle("出库统计");
     }else if(tag.equals("enter")){
@@ -108,13 +136,40 @@ public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnI
     return tag;
   }
 
-  private void initData() {
+  private void initData(int position) {
     //查询数据库 已入库的资产 并且是合格的
     List<AssetDetail> list = null;
     if(tag.equals("out")){
-      list = DbUtils.queryByExist(AssetDetail.class, "出库");
+
+      switch(position){
+        case 0://全部
+          list = DbUtils.queryByExist(AssetDetail.class, "出库");
+          break;
+        case 1://自用
+          list = DbUtils.queryByExistAndUser(AssetDetail.class, "出库",true);
+          break;
+        case 2://外用
+          list = DbUtils.queryByExistAndUser(AssetDetail.class, "出库",false);
+          break;
+      }
+
     }else if(tag.equals("enter")){
-      list = DbUtils.queryByExist(AssetDetail.class, "入库");
+      switch(position){
+        case 0:
+          list = DbUtils.queryByExist(AssetDetail.class, "入库");
+          break;
+        case 1:
+          list = DbUtils.queryByExistAndUser(AssetDetail.class, "入库",true);
+          break;
+        case 2:
+          list = DbUtils.queryByExistAndUser(AssetDetail.class, "入库",false);
+          break;
+      }
+
+    }
+
+    if(list.size() == 0 ){
+        dialog.showInfoWithStatus("无数据");
     }
 
     assetDetails.clear();
@@ -126,7 +181,7 @@ public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnI
   @Override
   public void onResume() {
     super.onResume();
-    initData();
+    initData(0);
   }
 
   @Override
@@ -135,41 +190,12 @@ public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnI
     unbinder.unbind();
   }
 
-  @OnClick(R.id.btn_scan)
-  public void onViewClicked() {
-
-    if(!MyApplication.connectSuccess){
-          RFIDUtils.getInstance(mActivity).connectAsync();
-    }
-    if(!MyApplication.connectSuccess){
-      return;
-    }
-
-    //RFIDUtils.getInstance().readData(activity);
-   // RFIDUtils.getInstance().readOneByOne(activity,"OutAndEnterFragment");
-    /*Intent intent = new Intent(activity, AssetDetailActivity.class);
-    intent.putExtra("result","000001");
-    activity.startActivity(intent);*/
-
-
-    SharedPreferenceUtils sharedPreferenceUtils = new SharedPreferenceUtils(mActivity);
-    boolean isBatchScan = sharedPreferenceUtils.getBoolean(Contants.PATCH_SCAN, false);
-    Log.i("isBatchScan", "isBatchScan: " + isBatchScan);
-    if(!isBatchScan){//逐一扫描
-      RFIDUtils.getInstance(mActivity).readAsync(tag);
-    }else{//批量扫描
-      Intent intent = new Intent(mActivity, BatchScanActivity.class);
-      mActivity.startActivity(intent);
-    }
-
-  }
-
 
   @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
   public void onInventoryAssetEvent(Event.InventoryAssetsEvent event){
-    if(event.getTag().equals("out")|| event.getTag().equals("enter")){
-      initData();
-    }
+    //if(event.getTag().equals("out")|| event.getTag().equals("enter")){
+      initData(0);
+    //}
   }
   @Override
   public void onDestroy() {
@@ -181,7 +207,10 @@ public class OutAndEnterFragment extends BaseFragment implements BaseAdapter.OnI
   public void onItemClick(int position) {
     Intent intent = new Intent(mActivity, AssetDetailActivity.class);
     intent.putExtra("tag",tag);
-    intent.putExtra("result",assetDetails.get(position).getBarcode());
+    intent.putExtra("result",assetDetails.get(position).getArchivesNumber());
     mActivity.startActivity(intent);
+    mActivity.overridePendingTransition(R.anim.right_in, R.anim.leftout);
   }
+
+
 }

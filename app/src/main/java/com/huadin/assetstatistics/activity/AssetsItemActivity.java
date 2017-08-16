@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -26,9 +27,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.R.attr.tag;
-import static android.R.id.list;
 
 /**
  * Created by admin on 2017/7/19.
@@ -57,9 +55,14 @@ public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnIt
 
         initView();
         initListener();
-        initData(0);//所有
 
     }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    initData(0);//所有
+  }
 
   private void initListener() {
     mAdapter.setOnItemClickListener(this);
@@ -69,6 +72,7 @@ public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnIt
         int categoryID = spCategory.getSelectedItemPosition();
         if(categoryID == 0){
           finish();
+          overridePendingTransition(R.anim.left_in, R.anim.right_out);
         }
       }
     });
@@ -84,6 +88,9 @@ public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnIt
             break;
           case 2://入库
             initData(2);
+            break;
+          case 3://不合格
+            initData(3);
             break;
 
         }
@@ -133,16 +140,13 @@ public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnIt
         case 2://入库
           list = DbUtils.queryByStyleAndExist(AssetDetail.class, assetName,"入库");
           break;
+        case 3://不合格
+          list = DbUtils.queryByStyleAndIsGood(AssetDetail.class, assetName);
+          break;
       }
 
         if(list.size() == 0 ){
-          if (categoryId == 0){
-            dialog.showInfoWithStatus("没有任何资产");
-          }else if(categoryId == 1){
-            dialog.showInfoWithStatus("没有任何出库资产");
-          }else if(categoryId == 2){
-            dialog.showInfoWithStatus("没有任何库存资产");
-          }
+            dialog.showInfoWithStatus("无数据");
         }
 
         assetDetails.clear();
@@ -160,7 +164,18 @@ public class AssetsItemActivity extends BaseActivity implements BaseAdapter.OnIt
   public void onItemClick(int position) {
     Intent intent = new Intent(this, AssetDetailActivity.class);
     intent.putExtra("tag","InventoryAssetsFragment");
-    intent.putExtra("result",assetDetails.get(position).getBarcode());
+    intent.putExtra("result",assetDetails.get(position).getArchivesNumber());
     startActivity(intent);
+    overridePendingTransition(R.anim.right_in, R.anim.leftout);
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if(keyCode == KeyEvent.KEYCODE_BACK || keyCode == android.R.id.home){
+      finish();
+      overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+    return super.onKeyDown(keyCode, event);
+
   }
 }

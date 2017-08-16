@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,27 +8,22 @@
     android:orientation="vertical"
     tools:context="com.huadin.assetstatistics.activity.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:popupTheme="@style/OverflowMenuStyle"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:background="@color/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"/>
+    <include layout="@layout/toolbar_layout"/>
 
     <FrameLayout
         android:layout_above="@+id/view_line"
         android:layout_marginTop="?attr/actionBarSize"
         android:id="@+id/fl_container"
+        android:layout_marginBottom="65dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </FrameLayout>
-    <View
+   <!-- <View
+        android:layout_gravity="bottom"
         android:id="@+id/view_line"
-        android:layout_above="@+id/bottom"
         android:background="@android:color/darker_gray"
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"/>-->
     <LinearLayout
 
         android:id="@+id/bottom"
@@ -36,7 +31,7 @@
         android:paddingBottom="5dp"
         android:background="@color/colorAccent"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RadioGroup
@@ -48,7 +43,7 @@
             <RadioButton
                 android:id="@+id/rb_inventory"
                 android:button="@null"
-                android:text="资产库存"
+                android:text="@string/allAssets"
                 android:drawableTop="@drawable/inventory_bg"
                 android:textSize="@dimen/text_size2"
                 android:gravity="center"
@@ -58,7 +53,7 @@
             <RadioButton
                 android:id="@+id/rb_outbound"
                 android:button="@null"
-                android:text="出库统计"
+                android:text="@string/outRecord"
                 android:drawableTop="@drawable/out_bg"
                 android:textSize="@dimen/text_size2"
                 android:gravity="center"
@@ -68,19 +63,8 @@
             <RadioButton
                 android:id="@+id/rb_storage"
                 android:button="@null"
-                android:text="入库统计"
+                android:text="@string/enterRecord"
                 android:drawableTop="@drawable/enter_bg"
-                android:textSize="@dimen/text_size2"
-                android:gravity="center"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <RadioButton
-                android:visibility="gone"
-                android:id="@+id/rb_setting"
-                android:button="@null"
-                android:text="设置"
-                android:drawableTop="@drawable/set_bg"
                 android:textSize="@dimen/text_size2"
                 android:gravity="center"
                 android:layout_width="0dp"
@@ -89,4 +73,13 @@
         </RadioGroup>
 
     </LinearLayout>
-</RelativeLayout>
+
+    <com.huadin.assetstatistics.widget.MyFab
+        android:id="@+id/btn_scan"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/scan"
+        android:layout_gravity="bottom|right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</FrameLayout>

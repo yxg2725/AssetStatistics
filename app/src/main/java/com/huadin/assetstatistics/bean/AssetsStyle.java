@@ -14,6 +14,15 @@ public class AssetsStyle {
   private int count;//总个数
   private int existNum;//库存个数
   private int outNum;//出库个数
+  private int notGood;//不合格个数
+
+  public int getNotGood() {
+    return notGood;
+  }
+
+  public void setNotGood(int notGood) {
+    this.notGood = notGood;
+  }
 
   public String getAsssetStyle() {
     return asssetStyle;

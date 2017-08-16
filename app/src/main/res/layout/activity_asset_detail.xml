@@ -4,13 +4,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:background="@color/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+    <include layout="@layout/toolbar_layout"/>
 
-    </android.support.v7.widget.Toolbar>
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -58,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/et_assets_id"
             android:padding="5dp"
             android:layout_width="match_parent"
@@ -78,13 +73,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:text="密云供电公司"
             android:id="@+id/et_company"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+        <!--使用部门-->
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="5dp"
+                android:text="使用部门:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <AutoCompleteTextView
+                android:text=""
+                android:id="@+id/et_department"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
     <!--生产厂家-->
     <LinearLayout
         android:gravity="center_vertical"
@@ -99,12 +115,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/et_manufacturer"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+        <!--购置日期-->
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="5dp"
+                android:text="购置日期:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:enabled="false"
+                android:id="@+id/et_date_purchase"
+                android:padding="5dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <ImageButton
+                android:id="@+id/ib_calendar_date_purchase"
+                android:src="@drawable/calendar_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
     <!--出厂日期-->
     <LinearLayout
         android:gravity="center_vertical"
@@ -147,7 +192,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/check_num"
             android:padding="5dp"
             android:layout_weight="1"
@@ -174,11 +219,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/et_archives_num"
-            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:padding="5dp"/>
     </LinearLayout>
     <!--校验日期-->
     <LinearLayout
@@ -237,6 +282,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+        <!--保管人-->
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="5dp"
+                android:text="保管人:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/et_custodian"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
     <!--校验员-->
     <LinearLayout
         android:gravity="center_vertical"
@@ -251,12 +316,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/et_check_people"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
         <!--是否合格-->
         <LinearLayout
             android:gravity="center_vertical"
@@ -286,14 +352,53 @@
         android:background="@drawable/add_photos"
         android:layout_width="100dp"
         android:layout_height="100dp"/>
-    <Button
-        android:id="@+id/btn_save"
-        android:text="确定"
-        android:layout_margin="5dp"
-        android:background="@drawable/btn_scan_bg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
+        <LinearLayout
+            android:id="@+id/ll_enter_out"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_enter"
+                android:text="入库"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:background="@drawable/btn_scan_bg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:gravity="center"
+                android:id="@+id/btn_out"
+                android:text="出库"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:background="@drawable/btn_scan_bg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/ll_sure"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_sure"
+                android:text="确定"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:background="@drawable/btn_scan_bg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 </LinearLayout>

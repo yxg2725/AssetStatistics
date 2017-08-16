@@ -33,7 +33,11 @@
         </activity>
         <activity android:name=".activity.AboutActivity">
         </activity>
-        <activity android:name=".activity.BatchScanActivity">
+        <activity
+            android:name=".activity.BatchScanActivity"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".activity.DataInActivity">
         </activity>
     </application>
 
